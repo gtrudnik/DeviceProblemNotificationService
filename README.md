@@ -23,5 +23,8 @@ Next time you need start ./dpns/main.py
 create new git tag
 ```git tag v0.1.0```
 
+push tags
+```git push origin --tags```
+
 generate changelog
 ```git cliff --config cliff.toml --output CHANGELOG.md```
