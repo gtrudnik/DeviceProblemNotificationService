@@ -1,5 +1,5 @@
 from dpns.db.db import Base
-from sqlalchemy import Column, BigInteger, ForeignKey
+from sqlalchemy import Column, BigInteger, ForeignKey, Integer, String
 
 
 class ProblemAuthor(Base):
@@ -13,3 +13,5 @@ class ProblemAuthor(Base):
     )
     author = Column(BigInteger, ForeignKey('users.id'))
     problem = Column(BigInteger, ForeignKey('problems.id'))
+    grade = Column(Integer)
+    comment = Column(String)

@@ -15,7 +15,7 @@ class Problem(Base):
     type_problem = Column(String)
     description = Column(String)
     date_created = Column(DateTime, default=datetime.utcnow)
-    date_resolved = Column(DateTime, nullable=True)
     status = Column(String)
+    date_updated_status = Column(DateTime, nullable=True)
     resolver = Column(BigInteger, ForeignKey('users.id'))
     device = Column(BigInteger, ForeignKey('devices.id'))
