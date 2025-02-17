@@ -17,6 +17,16 @@ In your system must be installed poetry (it's package manager like pip)
 
 Next time you need start ./dpns/main.py
 
+### Db migrations by alembic
+
+Make  migration:
+
+```alembic revision --autogenerate -m 'migration_name'```
+
+Upgrade migration
+
+```alembic upgrade head```
+
 
 ### Generation changelog
 
