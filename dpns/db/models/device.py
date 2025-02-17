@@ -1,5 +1,5 @@
 from dpns.db.db import Base
-from sqlalchemy import Column, BigInteger, Integer, String, DateTime
+from sqlalchemy import Column, BigInteger, Integer, String, DateTime, ForeignKey
 from datetime import datetime
 
 
@@ -13,7 +13,7 @@ class Device(Base):
         autoincrement=True
     )
     name = Column(String)
-    type_device = Column(String)
+    type_device = Column(BigInteger, ForeignKey('device_types.id'), nullable=True)
     description = Column(String)
     building = Column(String)
     floor = Column(Integer)
