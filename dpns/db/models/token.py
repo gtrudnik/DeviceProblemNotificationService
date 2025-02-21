@@ -11,7 +11,7 @@ class Token(Base):
         primary_key=True,
         autoincrement=True
     )
-    name = Column(String, nullable=False)
+    name = Column(String, unique=True, nullable=False)
     token = Column(
         String,
         nullable=False,

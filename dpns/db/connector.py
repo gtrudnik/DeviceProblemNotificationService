@@ -18,6 +18,8 @@ class Controller():
     @staticmethod
     async def add_token(name: str, role: str):
         session: AsyncSession = await get_session()
+        if (await session.execute(select(Token).filter(Token.name == name))).scalar() is not None:
+            return "Token with this name already exist"
         token_text = generate_token()
         token_hash = hash_md5(token_text)
         token = Token(name=name, token=token_hash, role=role)
@@ -28,8 +30,11 @@ class Controller():
     @staticmethod
     async def del_token(name):
         session: AsyncSession = await get_session()
+        if (await session.execute(select(Token).filter(Token.name == name))).scalar() is None:
+            return "Token with this name don't exist"
         await session.execute(delete(Token).filter(Token.name == name))
         await session.commit()
+        return "Token deleted"
 
     @staticmethod
     async def check_token(token_text: str):
