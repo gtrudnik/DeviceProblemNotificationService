@@ -12,7 +12,7 @@ class User(Base):
         primary_key=True,
         autoincrement=True
     )
-    login = Column(String)
-    tg_id = Column(BigInteger)
+    login = Column(String, unique=True)
+    tg_id = Column(BigInteger, unique=True)
     role = Column(String)
     date_created = Column(DateTime, default=datetime.utcnow)
