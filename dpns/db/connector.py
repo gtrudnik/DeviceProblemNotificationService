@@ -1,6 +1,6 @@
 from sqlalchemy import select, update, delete, and_, or_
 from sqlalchemy.ext.asyncio import AsyncSession
-from dpns.db.db import get_session
+from dpns.db.db import get_session, use_db
 from dpns.libs.token_generator import generate_token, hash_md5
 from dpns.db.models.token import Token
 from dpns.db.models.user import User
@@ -15,18 +15,16 @@ from dpns.db.models.problem_author import ProblemAuthor
 class Controller():
     """ Users """
 
-    @staticmethod
-    async def create_user(login: str | None = None, tg_id: int | None = None, role: str = "user"):
-        session: AsyncSession = await get_session()
+    @use_db
+    async def create_user(self, session: AsyncSession, login: str | None = None, tg_id: int | None = None, role: str = "user"):
         if login is None and tg_id is None:
             return "User must have tg_id or login"
         user = User(login=login, tg_id=tg_id, role=role)
         session.add(user)
         await session.commit()
 
-    @staticmethod
-    async def get_user(user_id: int | None = None, login: str | None = None, tg_id: int | None = None):
-        session: AsyncSession = await get_session()
+    @use_db
+    async def get_user(self, session: AsyncSession, user_id: int | None = None, login: str | None = None, tg_id: int | None = None):
         if [user_id, login, tg_id].count(None) != 2:
             return "You should choose one parameter: user_id, login or tg_id"
         if user_id is not None:
@@ -37,9 +35,8 @@ class Controller():
             user = (await session.execute(select(User).filter(User.tg_id == tg_id))).scalar()
         return user
 
-    @staticmethod
-    async def change_role(new_role: str, user_id: int | None = None, login: str | None = None, tg_id: int | None = None):
-        session: AsyncSession = await get_session()
+    @use_db
+    async def change_role(self, session: AsyncSession, new_role: str, user_id: int | None = None, login: str | None = None, tg_id: int | None = None):
         if [user_id, login, tg_id].count(None) != 2:
             return "You should choose one parameter: user_id, login or tg_id"
         if user_id is not None:
@@ -51,9 +48,8 @@ class Controller():
         user.role = new_role
         await session.commit()
 
-    @staticmethod
-    async def delete_user(user_id: int | None = None, login: str | None = None, tg_id: int | None = None):
-        session: AsyncSession = await get_session()
+    @use_db
+    async def delete_user(self, session: AsyncSession, user_id: int | None = None, login: str | None = None, tg_id: int | None = None):
         if [user_id, login, tg_id].count(None) != 2:
             return "You should choose one parameter: user_id, login or tg_id"
         if user_id is not None:
@@ -64,9 +60,8 @@ class Controller():
             await session.execute(delete(User).filter(User.tg_id == tg_id))
         await session.commit()
 
-    @staticmethod
-    async def connect_tg(tg_id: int | None = None, user_id: int | None = None, login: str | None = None):
-        session: AsyncSession = await get_session()
+    @use_db
+    async def connect_tg(self, session: AsyncSession, tg_id: int | None = None, user_id: int | None = None, login: str | None = None):
         if [user_id, login].count(None) != 1:
             return "You should choose one parameter: user_id or login"
         if user_id is not None:
@@ -80,9 +75,8 @@ class Controller():
         user.tg_id = tg_id
         await session.commit()
 
-    @staticmethod
-    async def delete_tg(user_id: int | None = None, login: str | None = None):
-        session: AsyncSession = await get_session()
+    @use_db
+    async def delete_tg(self, session: AsyncSession, user_id: int | None = None, login: str | None = None):
         if [user_id, login].count(None) != 1:
             return "You should choose one parameter: user_id or login"
         if user_id is not None:
@@ -96,9 +90,8 @@ class Controller():
 
     """ Tokens """
 
-    @staticmethod
-    async def add_token(name: str, role: str):
-        session: AsyncSession = await get_session()
+    @use_db
+    async def add_token(self, session: AsyncSession, name: str, role: str):
         if (await session.execute(select(Token).filter(Token.name == name))).scalar() is not None:
             return "Token with this name already exist"
         token_text = generate_token()
@@ -108,19 +101,16 @@ class Controller():
         await session.commit()
         return token_text
 
-    @staticmethod
-    async def del_token(name):
-        session: AsyncSession = await get_session()
+    @use_db
+    async def del_token(self, session: AsyncSession, name):
         if (await session.execute(select(Token).filter(Token.name == name))).scalar() is None:
             return "Token with this name don't exist"
         await session.execute(delete(Token).filter(Token.name == name))
         await session.commit()
         return "Token deleted"
 
-    @staticmethod
-    async def check_token(token_text: str):
-        session: AsyncSession = await get_session()
-
+    @use_db
+    async def check_token(self, session: AsyncSession, token_text: str):
         res = (await session.execute(select(Token).filter(Token.token == hash_md5(token_text)))).scalar()
         await session.commit()
 
@@ -133,9 +123,9 @@ controller = Controller()
 
 # test
 import asyncio
-asyncio.run(controller.create_user(login="lol648"))
-# asyncio.run(controller.change_role(login="lol647", new_role="admin"))
-# asyncio.run(controller.delete_user(login="lol647"))
+# asyncio.run(controller.create_user(login="lol888"))
+# asyncio.run(controller.change_role(login="lol888", new_role="admin"))
+# asyncio.run(controller.delete_user(login="lol888"))
 # asyncio.run(controller.connect_tg(login="lol647", tg_id=12312312312))
 # asyncio.run(controller.delete_tg(login="lol647"))
 # print(asyncio.run(controller.add_token("lol", "admin")))
