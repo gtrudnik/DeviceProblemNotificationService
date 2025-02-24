@@ -74,6 +74,21 @@ class Controller():
         devices = (await session.execute(select(Device))).scalars().all()
         return devices
 
+    """ Device types """
+
+    @use_db
+    async def create_device_type(self,
+                            session: AsyncSession,
+                            name: str):
+        device_type = DeviceType(type_device=name)
+        session.add(device_type)
+        await session.commit()
+
+    @use_db
+    async def get_all_types_devices(self, session: AsyncSession):
+        device_types = (await session.execute(select(DeviceType))).scalars().all()
+        return device_types
+
     """ Users """
 
     @use_db
@@ -193,7 +208,9 @@ import asyncio
 # asyncio.run(controller.delete_device(device_id=1))
 # print(asyncio.run(controller.get_device_by_id(device_id=2)).name)
 # print(asyncio.run(controller.get_all_devices()))
-asyncio.run(controller.update_device(device_id=2, floor=11))
+# asyncio.run(controller.update_device(device_id=2, floor=11))
+# asyncio.run(controller.create_device_type(name="компьютер"))
+print(asyncio.run(controller.get_all_types_devices()))
 # asyncio.run(controller.create_user(login="lol888"))
 # asyncio.run(controller.change_role(login="lol888", new_role="admin"))
 # asyncio.run(controller.delete_user(login="lol888"))
