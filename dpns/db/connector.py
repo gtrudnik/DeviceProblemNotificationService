@@ -1,6 +1,6 @@
 from sqlalchemy import select, update, delete, and_, or_
 from sqlalchemy.ext.asyncio import AsyncSession
-from dpns.db.db import get_session, use_db
+from dpns.db.db import use_db
 from dpns.libs.token_generator import generate_token, hash_md5
 from dpns.db.models.token import Token
 from dpns.db.models.user import User
@@ -13,10 +13,72 @@ from dpns.db.models.problem_author import ProblemAuthor
 
 
 class Controller():
+    """ Devices """
+
+    @use_db
+    async def create_device(self,
+                            session: AsyncSession,
+                            name: str,
+                            building: str,
+                            floor: int,
+                            room: str,
+                            location_description: str | None = None,
+                            description: str | None = None,
+                            type_device: int | None = None):
+        device = Device(name=name, building=building,
+                        floor=floor, room=room,
+                        location_description=location_description,
+                        description=description,
+                        type_device=type_device)
+        session.add(device)
+        await session.commit()
+
+    @use_db
+    async def update_device(self,
+                            session: AsyncSession,
+                            device_id: int,
+                            building: str | None = None,
+                            floor: int | None = None,
+                            room: str | None = None,
+                            location_description: str | None = None,
+                            description: str | None = None):
+        device = (await session.execute(select(Device).filter(Device.id == device_id))).scalar()
+        if device is None:
+            return "Device with this id doesn't exist"
+        if building is not None:
+            device.building = building
+        if floor is not None:
+            device.floor = floor
+        if room is not None:
+            device.room = room
+        if location_description is not None:
+            device.location_description = location_description
+        if description is not None:
+            device.description = description
+        await session.commit()
+
+    @use_db
+    async def delete_device(self, session: AsyncSession, device_id: int):
+        await session.execute(delete(Device).filter(Device.id == device_id))
+        await session.commit()
+
+    @use_db
+    async def get_device_by_id(self, session: AsyncSession, device_id: int):
+        device = (await session.execute(select(Device).filter(Device.id == device_id))).scalar()
+        if device is None:
+            return "Device with this id doesn't exist"
+        return device
+
+    @use_db
+    async def get_all_devices(self, session: AsyncSession):
+        devices = (await session.execute(select(Device))).scalars().all()
+        return devices
+
     """ Users """
 
     @use_db
-    async def create_user(self, session: AsyncSession, login: str | None = None, tg_id: int | None = None, role: str = "user"):
+    async def create_user(self, session: AsyncSession, login: str | None = None, tg_id: int | None = None,
+                          role: str = "user"):
         if login is None and tg_id is None:
             return "User must have tg_id or login"
         user = User(login=login, tg_id=tg_id, role=role)
@@ -24,7 +86,8 @@ class Controller():
         await session.commit()
 
     @use_db
-    async def get_user(self, session: AsyncSession, user_id: int | None = None, login: str | None = None, tg_id: int | None = None):
+    async def get_user(self, session: AsyncSession, user_id: int | None = None, login: str | None = None,
+                       tg_id: int | None = None):
         if [user_id, login, tg_id].count(None) != 2:
             return "You should choose one parameter: user_id, login or tg_id"
         if user_id is not None:
@@ -36,7 +99,8 @@ class Controller():
         return user
 
     @use_db
-    async def change_role(self, session: AsyncSession, new_role: str, user_id: int | None = None, login: str | None = None, tg_id: int | None = None):
+    async def change_role(self, session: AsyncSession, new_role: str, user_id: int | None = None,
+                          login: str | None = None, tg_id: int | None = None):
         if [user_id, login, tg_id].count(None) != 2:
             return "You should choose one parameter: user_id, login or tg_id"
         if user_id is not None:
@@ -49,7 +113,8 @@ class Controller():
         await session.commit()
 
     @use_db
-    async def delete_user(self, session: AsyncSession, user_id: int | None = None, login: str | None = None, tg_id: int | None = None):
+    async def delete_user(self, session: AsyncSession, user_id: int | None = None, login: str | None = None,
+                          tg_id: int | None = None):
         if [user_id, login, tg_id].count(None) != 2:
             return "You should choose one parameter: user_id, login or tg_id"
         if user_id is not None:
@@ -61,7 +126,8 @@ class Controller():
         await session.commit()
 
     @use_db
-    async def connect_tg(self, session: AsyncSession, tg_id: int | None = None, user_id: int | None = None, login: str | None = None):
+    async def connect_tg(self, session: AsyncSession, tg_id: int | None = None, user_id: int | None = None,
+                         login: str | None = None):
         if [user_id, login].count(None) != 1:
             return "You should choose one parameter: user_id or login"
         if user_id is not None:
@@ -123,6 +189,11 @@ controller = Controller()
 
 # test
 import asyncio
+# asyncio.run(controller.create_device(name="pantum m5200x", building="A", floor=6, room="615"))
+# asyncio.run(controller.delete_device(device_id=1))
+# print(asyncio.run(controller.get_device_by_id(device_id=2)).name)
+# print(asyncio.run(controller.get_all_devices()))
+asyncio.run(controller.update_device(device_id=2, floor=11))
 # asyncio.run(controller.create_user(login="lol888"))
 # asyncio.run(controller.change_role(login="lol888", new_role="admin"))
 # asyncio.run(controller.delete_user(login="lol888"))
