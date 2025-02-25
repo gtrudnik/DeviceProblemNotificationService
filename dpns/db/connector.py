@@ -78,8 +78,8 @@ class Controller():
 
     @use_db
     async def create_device_type(self,
-                            session: AsyncSession,
-                            name: str):
+                                 session: AsyncSession,
+                                 name: str):
         device_type = DeviceType(type_device=name)
         session.add(device_type)
         await session.commit()
@@ -88,6 +88,76 @@ class Controller():
     async def get_all_types_devices(self, session: AsyncSession):
         device_types = (await session.execute(select(DeviceType))).scalars().all()
         return device_types
+
+    """ Problems """
+
+    @use_db
+    async def create_problem(self,
+                             session: AsyncSession,
+                             device_id: int,
+                             description: str | None = None,
+                             type_problem: str | None = None):
+        problem = Problem(device=device_id, description=description, type_problem=type_problem)
+        session.add(problem)
+        await session.commit()
+
+    @use_db
+    async def change_problem_status(self,
+                                    session: AsyncSession,
+                                    problem_id: int,
+                                    status: str):
+        problem = (await session.execute(select(Problem).filter(Problem.id == problem_id))).scalar()
+        if problem is None:
+            return "Problem with this id doesn't exist"
+        problem.status = status
+        await session.commit()
+
+    @use_db
+    async def set_problem_resolver(self,
+                                   session: AsyncSession,
+                                   problem_id: int,
+                                   resolver: int):
+        problem = (await session.execute(select(Problem).filter(Problem.id == problem_id))).scalar()
+        if problem is None:
+            return "Problem with this id doesn't exist"
+        if problem.resolver:
+            return "This problem already have resolver"
+        problem.resolver = resolver
+        await session.commit()
+
+    @use_db
+    async def delete_problem_resolver(self,
+                                   session: AsyncSession,
+                                   problem_id: int):
+        problem = (await session.execute(select(Problem).filter(Problem.id == problem_id))).scalar()
+        if problem is None:
+            return "Problem with this id doesn't exist"
+        if problem.resolver is None:
+            return "This problem already don't have resolver"
+        problem.resolver = None
+        await session.commit()
+
+    @use_db
+    async def get_problems_by_resolver(self,
+                                session: AsyncSession,
+                                resolver: int):
+        problems = (await session.execute(select(Problem).filter(Problem.resolver == resolver))).scalars().all()
+        return problems
+
+    @use_db
+    async def get_problem_by_id(self,
+                                session: AsyncSession,
+                                problem_id: int):
+        problem = (await session.execute(select(Problem).filter(Problem.id == problem_id))).scalar()
+        if problem is None:
+            return "Problem with this id doesn't exist"
+        return problem
+
+    @use_db
+    async def get_all_problems(self,
+                               session: AsyncSession):
+        problems = (await session.execute(select(Problem))).scalars().all()
+        return problems
 
     """ Users """
 
@@ -204,13 +274,17 @@ controller = Controller()
 
 # test
 import asyncio
+
 # asyncio.run(controller.create_device(name="pantum m5200x", building="A", floor=6, room="615"))
 # asyncio.run(controller.delete_device(device_id=1))
 # print(asyncio.run(controller.get_device_by_id(device_id=2)).name)
 # print(asyncio.run(controller.get_all_devices()))
 # asyncio.run(controller.update_device(device_id=2, floor=11))
 # asyncio.run(controller.create_device_type(name="компьютер"))
-print(asyncio.run(controller.get_all_types_devices()))
+# print(asyncio.run(controller.create_problem(device_id=3)))
+# asyncio.run(controller.change_problem_status(problem_id=2, status="resolved"))
+
+asyncio.run(controller.set_problem_resolver(problem_id=2, resolver=1))
 # asyncio.run(controller.create_user(login="lol888"))
 # asyncio.run(controller.change_role(login="lol888", new_role="admin"))
 # asyncio.run(controller.delete_user(login="lol888"))
