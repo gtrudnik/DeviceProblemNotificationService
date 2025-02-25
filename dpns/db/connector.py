@@ -68,9 +68,9 @@ class Controller():
 
     @use_db
     async def delete_admin_device(self,
-                               session: AsyncSession,
-                               device_id: int,
-                               admin_id: int):
+                                  session: AsyncSession,
+                                  device_id: int,
+                                  admin_id: int):
         await session.execute(
             delete(DeviceAdmin).filter(and_(DeviceAdmin.admin == admin_id, DeviceAdmin.device == device_id)))
         await session.commit()
@@ -90,6 +90,12 @@ class Controller():
     @use_db
     async def get_all_devices(self, session: AsyncSession):
         devices = (await session.execute(select(Device))).scalars().all()
+        return devices
+
+    @use_db
+    async def get_admin_devices(self, session: AsyncSession, admin_id: int):
+        devices = (
+            await session.execute(select(DeviceAdmin.device).filter(DeviceAdmin.admin == admin_id))).scalars().all()
         return devices
 
     """ Device types """
@@ -117,6 +123,17 @@ class Controller():
                              type_problem: str | None = None):
         problem = Problem(device=device_id, description=description, type_problem=type_problem)
         session.add(problem)
+        await session.commit()
+
+    @use_db
+    async def create_problem_type(self,
+                                  session: AsyncSession,
+                                  type_device_id: int,
+                                  name: str,
+                                  description: str | None = None):
+        problem_type = ProblemType(type_device=type_device_id,
+                                   name_problem=name, description=description)
+        session.add(problem_type)
         await session.commit()
 
     @use_db
@@ -302,8 +319,9 @@ import asyncio
 # print(asyncio.run(controller.create_problem(device_id=3)))
 # asyncio.run(controller.change_problem_status(problem_id=2, status="resolved"))
 # asyncio.run(controller.set_problem_resolver(problem_id=2, resolver=1))
-# asyncio.run(controller.add_admin_device(device_id=2, admin_id=1))
-
+# asyncio.run(controller.add_admin_device(device_id=3, admin_id=1))
+# print(asyncio.run(controller.get_admin_devices(admin_id=1)))
+# asyncio.run(controller.create_problem_type(type_device_id=1, name="замятие бумаги"))
 # asyncio.run(controller.create_user(login="lol888"))
 # asyncio.run(controller.change_role(login="lol888", new_role="admin"))
 # asyncio.run(controller.delete_user(login="lol888"))
