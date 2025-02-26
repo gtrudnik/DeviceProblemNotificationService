@@ -94,9 +94,17 @@ class Controller():
 
     @use_db
     async def get_admin_devices(self, session: AsyncSession, admin_id: int):
+        """ Get all devices of admin """
         devices = (
             await session.execute(select(DeviceAdmin.device).filter(DeviceAdmin.admin == admin_id))).scalars().all()
         return devices
+
+    @use_db
+    async def get_device_admins(self, session: AsyncSession, device_id: int):
+        """ Get all admins of device """
+        admins = (
+            await session.execute(select(DeviceAdmin.admin).filter(DeviceAdmin.device == device_id))).scalars().all()
+        return admins
 
     """ Device types """
 
@@ -134,6 +142,30 @@ class Controller():
         problem_type = ProblemType(type_device=type_device_id,
                                    name_problem=name, description=description)
         session.add(problem_type)
+        await session.commit()
+
+    @use_db
+    async def add_problem_author(self,
+                                 session: AsyncSession,
+                                 problem_id: int,
+                                 author_id: int):
+        problem_author = ProblemAuthor(problem=problem_id, author=author_id)
+        session.add(problem_author)
+        await session.commit()
+
+    @use_db
+    async def add_problem_feedback(self,
+                                   session: AsyncSession,
+                                   problem_id: int,
+                                   author_id: int,
+                                   grade: int,
+                                   comment: str | None = None):
+        problem_author = (await session.execute(select(ProblemAuthor).filter(
+            and_(ProblemAuthor.problem == problem_id, ProblemAuthor.author == author_id)))).scalar()
+        if problem_author is None:
+            return "Problem with this author doesn't exist"
+        problem_author.grade = grade
+        problem_author.comment = comment
         await session.commit()
 
     @use_db
@@ -321,6 +353,9 @@ import asyncio
 # asyncio.run(controller.set_problem_resolver(problem_id=2, resolver=1))
 # asyncio.run(controller.add_admin_device(device_id=3, admin_id=1))
 # print(asyncio.run(controller.get_admin_devices(admin_id=1)))
+# print(asyncio.run(controller.get_device_admins(device_id=2)))
+# asyncio.run(controller.add_problem_author(author_id=1, problem_id=2))
+# asyncio.run(controller.add_problem_feedback(author_id=1, problem_id=2, grade=4, comment="Сделали всё хорошо и быстро"))
 # asyncio.run(controller.create_problem_type(type_device_id=1, name="замятие бумаги"))
 # asyncio.run(controller.create_user(login="lol888"))
 # asyncio.run(controller.change_role(login="lol888", new_role="admin"))
