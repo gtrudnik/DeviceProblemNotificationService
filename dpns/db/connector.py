@@ -263,6 +263,7 @@ class Controller():
             user = (await session.execute(select(User).filter(User.tg_id == tg_id))).scalar()
         user.role = new_role
         await session.commit()
+        return user
 
     @use_db
     async def delete_user(self, session: AsyncSession, user_id: int | None = None, login: str | None = None,
