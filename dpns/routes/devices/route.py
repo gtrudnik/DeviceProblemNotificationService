@@ -1,20 +1,52 @@
 from fastapi import APIRouter
+from dpns.db.connector import controller
+
 devices_router = APIRouter()
 
 
 @devices_router.post("/create")
-async def create_device():
-    pass
+async def create_device(name: str,
+                        building: str,
+                        floor: int,
+                        room: str,
+                        location_description: str | None = None,
+                        description: str | None = None,
+                        type_device: int | None = None):
+    try:
+        await controller.create_device(name=name,
+                                       type_device=type_device,
+                                       building=building,
+                                       floor=floor,
+                                       room=room,
+                                       location_description=location_description,
+                                       description=description)
+    except Exception as e:
+        print(e)
+        return "Error while creating device"
 
 
 @devices_router.post("/update")
-async def update_device():
-    pass
+async def update_device(device_id: int,
+                        building: str | None = None,
+                        floor: int | None = None,
+                        room: str | None = None,
+                        location_description: str | None = None,
+                        description: str | None = None):
+    try:
+        await controller.update_device(device_id=device_id,
+                                       building=building,
+                                       floor=floor,
+                                       room=room,
+                                       location_description=location_description,
+                                       description=description)
+    except:
+        return "Error while updating device"
 
 
 @devices_router.post("/set_admin")
-async def set_admin_device():
-    pass
+async def set_admin_device(device_id: int,
+                           admin_id: int):
+    await controller.add_admin_device(device_id=device_id, admin_id=admin_id)
 
 
 @devices_router.post("/new_type")
@@ -43,5 +75,5 @@ async def get_all_devices():
 
 
 @devices_router.delete("/delete")
-async def delete_device():
-    pass
+async def delete_device(device_id: int):
+    await controller.delete_device(device_id=device_id)
