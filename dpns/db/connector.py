@@ -95,9 +95,11 @@ class Controller():
     @use_db
     async def get_admin_devices(self, session: AsyncSession, admin_id: int):
         """ Get all devices of admin """
-        devices = (
-            await session.execute(select(DeviceAdmin.device).filter(DeviceAdmin.admin == admin_id))).scalars().all()
-        return devices
+        query = (select(DeviceAdmin).
+                 filter(DeviceAdmin.admin == admin_id).
+                 outerjoin(Device).where(DeviceAdmin.device == Device.id))
+        devices = (await session.execute(query)).scalars().all()
+        return [i.devices for i in devices]
 
     @use_db
     async def get_device_admins(self, session: AsyncSession, device_id: int):

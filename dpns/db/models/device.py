@@ -1,5 +1,6 @@
 from dpns.db.db import Base
 from sqlalchemy import Column, BigInteger, Integer, String, DateTime, ForeignKey
+from sqlalchemy.orm import relationship
 from datetime import datetime
 
 
@@ -20,3 +21,5 @@ class Device(Base):
     room = Column(String)
     location_description = Column(String)
     date_created = Column(DateTime, default=datetime.utcnow)
+
+    device_admin = relationship("DeviceAdmin", back_populates="devices")
