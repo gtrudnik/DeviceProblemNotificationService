@@ -131,8 +131,14 @@ class Controller():
                              device_id: int,
                              description: str | None = None,
                              type_problem: str | None = None):
-        problem = Problem(device=device_id, description=description, type_problem=type_problem)
-        session.add(problem)
+        problem = (await session.execute(select(Problem).filter(
+            and_(Problem.device == device_id, Problem.type_problem == type_problem,
+                 Problem.status == "active")))).scalar()
+        if problem is None or type_problem is None:
+            problem = Problem(device=device_id, description=description, type_problem=type_problem)
+            session.add(problem)
+        else:
+            problem.description = problem.description + "|\n|" + description
         await session.commit()
 
     @use_db

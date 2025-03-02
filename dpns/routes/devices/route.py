@@ -62,8 +62,8 @@ async def set_admin_device(device_id: int,
 
 
 @devices_router.post("/new_type")
-async def new_device_type():
-    pass
+async def new_device_type(name: str):
+    await controller.create_device_type(name=name)
 
 
 @devices_router.get("/get")
