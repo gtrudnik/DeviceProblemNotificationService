@@ -128,6 +128,7 @@ class Controller():
     @use_db
     async def create_problem(self,
                              session: AsyncSession,
+                             author_id: int,
                              device_id: int,
                              description: str | None = None,
                              type_problem: str | None = None):
@@ -140,6 +141,8 @@ class Controller():
         else:
             problem.description = problem.description + "|\n|" + description
         await session.commit()
+
+        await self.add_problem_author(problem_id=problem.id, author_id=author_id)
 
     @use_db
     async def create_problem_type(self,
@@ -218,6 +221,16 @@ class Controller():
                                        resolver: int):
         problems = (await session.execute(select(Problem).filter(Problem.resolver == resolver))).scalars().all()
         return problems
+
+    @use_db
+    async def get_problems_by_author(self,
+                                     session: AsyncSession,
+                                     author: int):
+        query = (select(ProblemAuthor, Problem).
+                 filter(ProblemAuthor.author == author).
+                 outerjoin(Problem).where(ProblemAuthor.problem == Problem.id))
+        problems = (await session.execute(query)).scalars().all()
+        return [i.problems for i in problems]
 
     @use_db
     async def get_problem_by_id(self,

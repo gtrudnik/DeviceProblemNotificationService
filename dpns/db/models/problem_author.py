@@ -1,5 +1,6 @@
 from dpns.db.db import Base
 from sqlalchemy import Column, BigInteger, ForeignKey, Integer, String
+from sqlalchemy.orm import relationship
 
 
 class ProblemAuthor(Base):
@@ -15,3 +16,5 @@ class ProblemAuthor(Base):
     problem = Column(BigInteger, ForeignKey('problems.id'))
     grade = Column(Integer)
     comment = Column(String)
+
+    problems = relationship("Problem", back_populates="authors", lazy="joined")

@@ -1,6 +1,7 @@
 from dpns.db.db import Base
 from sqlalchemy import Column, ForeignKey, String, DateTime, BigInteger
 from datetime import datetime
+from sqlalchemy.orm import relationship
 
 
 class Problem(Base):
@@ -19,3 +20,5 @@ class Problem(Base):
     date_updated_status = Column(DateTime, nullable=True)
     resolver = Column(BigInteger, ForeignKey('users.id'))
     device = Column(BigInteger, ForeignKey('devices.id'))
+
+    authors = relationship("ProblemAuthor", back_populates="problems")
