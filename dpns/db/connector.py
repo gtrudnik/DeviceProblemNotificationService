@@ -247,6 +247,15 @@ class Controller():
         problems = (await session.execute(select(Problem))).scalars().all()
         return problems
 
+    @use_db
+    async def get_problem_types(self,
+                                session: AsyncSession,
+                                type_device: int):
+        problem_types = (await session.execute(
+            select(ProblemType).filter(ProblemType.type_device == type_device))
+                         ).scalars().all()
+        return problem_types
+
     """ Users """
 
     @use_db

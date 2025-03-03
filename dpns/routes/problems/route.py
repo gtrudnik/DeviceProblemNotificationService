@@ -71,5 +71,6 @@ async def get_all_problems():
 
 
 @problems_router.get("/get_types")
-async def get_problems_types():
-    pass
+async def get_problems_types(type_device: int):
+    problem_types = await controller.get_problem_types(type_device=type_device)
+    return problem_types
