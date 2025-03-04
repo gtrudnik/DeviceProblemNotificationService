@@ -15,6 +15,7 @@ pydantic-settings = "^2.2.1"
 aiohttp = "^3.9.3"
 asyncpg = "^0.29.0"
 git-cliff = "^2.7.0"
+python-jose = "^3.4.0"
 
 
 [build-system]

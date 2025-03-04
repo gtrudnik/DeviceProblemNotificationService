@@ -363,9 +363,7 @@ class Controller():
         res = (await session.execute(select(Token).filter(Token.token == hash_md5(token_text)))).scalar()
         await session.commit()
 
-        if res is not None:
-            return res.role
-        return False
+        return res
 
 
 controller = Controller()

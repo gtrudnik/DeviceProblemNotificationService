@@ -1,14 +1,10 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from typing import Annotated
 from dpns.db.connector import controller
-from enum import Enum
-
-
-class Roles(str, Enum):
-    super_admin = "super_admin"
-    admin = 'admin'
-    user = 'user'
-    banned = 'banned'
-
+from dpns.schemas.role import Roles
+from dpns.libs.token_auth import has_token
+from dpns.libs.user_auth import get_token
+from dpns.libs.accesses import get_access
 
 users_router = APIRouter()
 
@@ -37,9 +33,12 @@ async def connect_tg():
 
 
 @users_router.get("/get")
-async def get_user(user_id: int | None = None,
+async def get_user(jwt_data: Annotated[dict | None, Depends(get_token)],
+                   token_data: Annotated[dict | None, Depends(has_token)],
+                   user_id: int | None = None,
                    tg_id: int | None = None,
                    login: str | None = None):
+    auth_type = await get_access(token_data=token_data, jwt_data=jwt_data)
     user = await controller.get_user(user_id=user_id, tg_id=tg_id, login=login)
     if user is None:
         return "User is not exist"

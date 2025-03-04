@@ -13,5 +13,8 @@ class Settings:
     postgres_port: str = os.getenv('POSTGRES_PORT')
     postgres_db: str = os.getenv('POSTGRES_DB')
 
+    secret_key: str = os.getenv('SECRET_KEY', "")
+    secret_algorithm: str = "HS256"
+
 
 settings = Settings()

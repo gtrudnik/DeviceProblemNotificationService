@@ -1,12 +1,7 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from dpns.db.connector import controller
-from enum import Enum
-
-
-class Status(str, Enum):
-    active = "active"
-    resolved = 'resolved'
-
+from dpns.schemas.status import Status
+from dpns.libs.user_auth import get_token
 
 problems_router = APIRouter()
 
@@ -65,7 +60,8 @@ async def get_problems_by_resolver(resolver: int):
 
 
 @problems_router.get("/get_all")
-async def get_all_problems():
+async def get_all_problems(jwt_data: dict = Depends(get_token)):
+    print(jwt_data)
     problems = await controller.get_all_problems()
     return problems
 

@@ -6,12 +6,15 @@ from routes.users.route import users_router
 from routes.tokens.route import tokens_router
 from routes.devices.route import devices_router
 from routes.problems.route import problems_router
+from routes.auth.route import auth_router
 
 app = FastAPI(
     title=settings.app_name,
     version="0.0.1",
 )
 
+
+app.include_router(auth_router, tags=['Auth'], prefix='/auth')
 app.include_router(devices_router, tags=['Devices'], prefix='/devices')
 app.include_router(problems_router, tags=['Problems'], prefix='/problems')
 app.include_router(users_router, tags=['Users'], prefix='/users')
