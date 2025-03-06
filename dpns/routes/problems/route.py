@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends
 from dpns.db.connector import controller
 from dpns.schemas.status import Status
 from dpns.libs.user_auth import get_token
+from dpns.tg_bot import send_message
 
 problems_router = APIRouter()
 
@@ -14,6 +15,9 @@ async def create_problem(device_id: int,
                                     device_id=device_id,
                                     description=description,
                                     type_problem=type_problem)
+    admins = await controller.get_device_admins(device_id=device_id)
+    tg_admins = [admin.tg_id for admin in admins if admin.tg_id is not None]
+    await send_message(tg_admins, "test_for_admin")
     # TODO: user who create problem
 
 

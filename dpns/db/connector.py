@@ -11,7 +11,6 @@ from dpns.db.models.problem import Problem
 from dpns.db.models.problem_type import ProblemType
 from dpns.db.models.problem_author import ProblemAuthor
 
-
 class Controller():
     """ Devices """
 
@@ -104,8 +103,10 @@ class Controller():
     @use_db
     async def get_device_admins(self, session: AsyncSession, device_id: int):
         """ Get all admins of device """
-        admins = (
-            await session.execute(select(DeviceAdmin.admin).filter(DeviceAdmin.device == device_id))).scalars().all()
+        query = (select(DeviceAdmin, User).filter(DeviceAdmin.device == device_id).
+                 outerjoin(User).where(DeviceAdmin.admin == User.id))
+        res = (await session.execute(query)).scalars().all()
+        admins = [i.admins for i in res]
         return admins
 
     """ Device types """
@@ -141,7 +142,6 @@ class Controller():
         else:
             problem.description = problem.description + "|\n|" + description
         await session.commit()
-
         await self.add_problem_author(problem_id=problem.id, author_id=author_id)
 
     @use_db
@@ -266,6 +266,7 @@ class Controller():
         user = User(login=login, tg_id=tg_id, role=role)
         session.add(user)
         await session.commit()
+        return user
 
     @use_db
     async def get_user(self, session: AsyncSession, user_id: int | None = None, login: str | None = None,

@@ -15,3 +15,4 @@ class DeviceAdmin(Base):
     admin = Column(BigInteger, ForeignKey('users.id'))
     device = Column(BigInteger, ForeignKey('devices.id'))
     devices = relationship("Device", back_populates="device_admin", lazy="joined")
+    admins = relationship("User", back_populates="device_admin", lazy="joined")

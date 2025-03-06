@@ -16,5 +16,7 @@ class Settings:
     secret_key: str = os.getenv('SECRET_KEY', "")
     secret_algorithm: str = "HS256"
 
+    token: str = os.getenv('TG_TOKEN')
+
 
 settings = Settings()

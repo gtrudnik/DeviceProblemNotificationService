@@ -1,3 +1,4 @@
+from sqlalchemy.orm import relationship
 from dpns.db.db import Base
 from sqlalchemy import Column, String, DateTime, BigInteger
 from datetime import datetime
@@ -16,3 +17,5 @@ class User(Base):
     tg_id = Column(BigInteger, unique=True)
     role = Column(String)
     date_created = Column(DateTime, default=datetime.utcnow)
+
+    device_admin = relationship("DeviceAdmin", back_populates="admins")
