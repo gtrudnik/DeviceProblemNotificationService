@@ -10,6 +10,8 @@ from dpns.db.models.device_admin import DeviceAdmin
 from dpns.db.models.problem import Problem
 from dpns.db.models.problem_type import ProblemType
 from dpns.db.models.problem_author import ProblemAuthor
+from dpns.db.models.tg_chat import TgChat
+
 
 class Controller():
     """ Devices """
@@ -375,6 +377,35 @@ class Controller():
         await session.commit()
 
         return res
+
+    """ Tg chats """
+    @use_db
+    async def get_tg_chat(self, session: AsyncSession, tg_id: int):
+        chat = (await session.execute(select(TgChat).filter(TgChat.tg_id == tg_id))).scalar()
+        if chat is None:
+            chat = TgChat(tg_id=tg_id, stage="start")
+            session.add(chat)
+        await session.commit()
+        return chat
+
+    @use_db
+    async def update_tg_chat(self,
+                             session: AsyncSession,
+                             tg_id: int,
+                             stage: str | None = None,
+                             device_id: int | None = None,
+                             problem_type: str | None = None,
+                             description: str | None = None):
+        chat = (await session.execute(select(TgChat).filter(TgChat.tg_id == tg_id))).scalar()
+        if stage is not None:
+            chat.stage = stage
+        if device_id is not None:
+            chat.device_id = device_id
+        if problem_type is not None:
+            chat.problem_type = problem_type
+        if description is not None:
+            chat.description = description
+        await session.commit()
 
 
 controller = Controller()
