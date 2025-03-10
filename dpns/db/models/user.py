@@ -19,3 +19,4 @@ class User(Base):
     date_created = Column(DateTime, default=datetime.utcnow)
 
     device_admin = relationship("DeviceAdmin", back_populates="admins")
+    problem_authors = relationship("ProblemAuthor", back_populates="authors")

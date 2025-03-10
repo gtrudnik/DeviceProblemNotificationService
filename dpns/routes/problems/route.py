@@ -25,6 +25,9 @@ async def create_problem(device_id: int,
 async def change_status_problem(problem_id: int,
                                 status: Status):
     await controller.change_problem_status(problem_id=problem_id, status=status)
+    authors = await controller.get_authors_by_problem(problem=problem_id)
+    tg_authors = [author.tg_id for author in authors if author.tg_id is not None]
+    await send_message(tg_authors, "test_for_authors")
 
 
 @problems_router.post("/set_resolver")

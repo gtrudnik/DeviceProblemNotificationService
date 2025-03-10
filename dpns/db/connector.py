@@ -233,6 +233,16 @@ class Controller():
         return [i.problems for i in problems]
 
     @use_db
+    async def get_authors_by_problem(self,
+                                     session: AsyncSession,
+                                     problem: int):
+        query = (select(ProblemAuthor, User).
+                 filter(ProblemAuthor.problem == problem).
+                 outerjoin(User).where(ProblemAuthor.author == User.id))
+        authors = (await session.execute(query)).scalars().all()
+        return [i.authors for i in authors]
+
+    @use_db
     async def get_problem_by_id(self,
                                 session: AsyncSession,
                                 problem_id: int):

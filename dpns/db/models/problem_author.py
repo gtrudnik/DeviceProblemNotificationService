@@ -18,3 +18,4 @@ class ProblemAuthor(Base):
     comment = Column(String)
 
     problems = relationship("Problem", back_populates="authors", lazy="joined")
+    authors = relationship("User", back_populates="problem_authors", lazy="joined")
