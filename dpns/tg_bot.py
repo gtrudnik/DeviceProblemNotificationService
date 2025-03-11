@@ -1,9 +1,17 @@
 from telebot.async_telebot import AsyncTeleBot
 from dpns.config import settings
 from dpns.db.connector import controller
+from telebot import types
 
 bot = AsyncTeleBot(settings.token)
 help_text = "test"
+
+
+def add_buttons(text_buttons: list[str]):
+    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    for text in text_buttons:
+        keyboard.add(types.KeyboardButton(text))
+    return keyboard
 
 
 def check_permission(func):
@@ -42,9 +50,55 @@ async def help_message(message):
 @bot.message_handler(content_types=['text'])
 @check_permission
 async def new_message(message):
-    # TODO: new problem
-    print(message.chat.id)
-    pass
+    chat = await controller.get_tg_chat(tg_id=message.chat.id)
+    menu_buttons = add_buttons(["Что умеет этот бот?"])
+    tg_id = chat.tg_id
+    stage = chat.stage
+    msg: str = message.text
+    ans = "Я не понял ваше сообщение, попробуйте ещё раз"
+
+    if msg == "Что умеет этот бот?":
+        await help_message(message=message)
+        return
+    elif msg == "Сбросить заявку❌":
+        await controller.clear_tg_chat(tg_id=tg_id)
+        ans = "Заявка сброшена"
+    elif stage == "start":
+        if msg.startswith("id="):
+            device_id = int(msg.split("=")[-1].strip())
+            await controller.update_tg_chat(tg_id=tg_id, stage="type_problem", device_id=device_id)
+            problem_types = await controller.get_problem_types(device_id=device_id)
+            problem_types = [problem.name_problem for problem in problem_types] + ["Другое", "Сбросить заявку❌"]
+            menu_buttons = add_buttons(problem_types)
+            ans = "Процесс создания заявки о проблеме на устройве запущен, выберите тип проблемы"
+    elif stage == "type_problem":
+        ans = "Выберите тип проблемы"
+        chat = await controller.get_tg_chat(tg_id=tg_id)
+        problem_types = await controller.get_problem_types(device_id=chat.device_id)
+        problem_types = [problem.name_problem for problem in problem_types] + ["Другое", "Сбросить заявку❌"]
+        menu_buttons = add_buttons(problem_types)
+        if msg in problem_types or msg == "Другое":
+            ans = "Тип проблемы выбран, напишите описание вашей проблемы, в случае необходимости, не менее 10 символов или пропустите."
+            menu_buttons = add_buttons(["Пропустить", "Сбросить заявку❌"])
+            if msg == "Другое":
+                msg = None
+            await controller.update_tg_chat(tg_id=tg_id, stage="description", problem_type=msg)
+    elif stage == "description":
+        ans = "Напишите описание вашей проблемы, в случае необходимости, не менее 10 символов или пропустите."
+        menu_buttons = add_buttons(["Пропустить", "Сбросить заявку❌"])
+        if msg == "Пропустить" or len(msg) >= 10:
+            if msg == "Пропустить":
+                msg = None
+            chat = await controller.get_tg_chat(tg_id=tg_id)
+            user = await controller.get_user(tg_id=tg_id)
+            await controller.create_problem(author_id=user.id,
+                                            device_id=chat.device_id,
+                                            description=msg,
+                                            type_problem=chat.problem_type)
+            await controller.clear_tg_chat(tg_id=tg_id)
+            ans = "Заявка о проблеме успешно создана"
+
+    await bot.send_message(chat.tg_id, ans, timeout=5, reply_markup=menu_buttons)
 
 
 async def start_bot():

@@ -262,7 +262,13 @@ class Controller():
     @use_db
     async def get_problem_types(self,
                                 session: AsyncSession,
-                                type_device: int):
+                                type_device: int | None = None,
+                                device_id: int | None = None):
+        if type_device is None:
+            device = (await session.execute(
+                select(Device).filter(Device.id == device_id))
+                      ).scalar()
+            type_device = device.type_device
         problem_types = (await session.execute(
             select(ProblemType).filter(ProblemType.type_device == type_device))
                          ).scalars().all()
@@ -379,6 +385,7 @@ class Controller():
         return res
 
     """ Tg chats """
+
     @use_db
     async def get_tg_chat(self, session: AsyncSession, tg_id: int):
         chat = (await session.execute(select(TgChat).filter(TgChat.tg_id == tg_id))).scalar()
@@ -405,6 +412,17 @@ class Controller():
             chat.problem_type = problem_type
         if description is not None:
             chat.description = description
+        await session.commit()
+
+    @use_db
+    async def clear_tg_chat(self,
+                             session: AsyncSession,
+                             tg_id: int):
+        chat = (await session.execute(select(TgChat).filter(TgChat.tg_id == tg_id))).scalar()
+        chat.stage = "start"
+        chat.device_id = None
+        chat.problem_type = None
+        chat.description = None
         await session.commit()
 
 
