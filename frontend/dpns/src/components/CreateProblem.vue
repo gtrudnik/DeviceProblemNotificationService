@@ -45,14 +45,14 @@ export default {
     try {
       const response = await axios.get('http://127.0.0.1:8000/devices/get?device_id=2');
       const deviceData = response.data;
-      this.device_name = deviceData.name; // подставьте нужные поля из API
-      this.device_type = deviceData.type_device; // замените на реальный ключ из вашего ответа
-      this.device_location = `корпус ${deviceData.building}, этаж ${deviceData.floor}, аудитория ${deviceData.room}`; // замените на реальный ключ из вашего ответа
-      this.device_description = deviceData.description; // замените на реальный ключ из вашего ответа
+      this.device_name = deviceData.name;
+      this.device_type = deviceData.type_device;
+      this.device_location = `корпус ${deviceData.building}, этаж ${deviceData.floor}, аудитория ${deviceData.room}`;
+      this.device_description = deviceData.description;
       this.device_type_id = deviceData.type_device_id;
       console.log(deviceData);
     } catch (error) {
-      console.error(error.response.data); // Обработайте ошибку
+      console.error(error.response.data);
     }
     try {
       const response = await axios.get(`http://127.0.0.1:8000/problems/get_types?type_device=${this.device_type_id}`);
@@ -63,17 +63,14 @@ export default {
         console.log(problemType.name_problem);
       }
       this.problemTypes = problem_types;
-      console.log(problem_types);
     } catch (error) {
-      console.error(error.response.data); // Обработайте ошибку
+      console.error(error.response.data);
     }
   },
   methods: {
     async sendProblem() {
         event.preventDefault();
         try {
-          console.log(this.problemDescription);
-          console.log(1);
           const params = new URLSearchParams({
             device_id: 2,
           });
@@ -83,13 +80,10 @@ export default {
           if (this.problemType !== "Другая проблема") {
             params.append('type_problem', this.problemType);
           }
-          console.log(`http://127.0.0.1:8000/problems/create?${params.toString()}`);
           const response = await axios.post(`http://127.0.0.1:8000/problems/create?${params.toString()}`);
-          console.log(response);
-
-
+          console.log(response.data);
         } catch (error) {
-          console.error(error.response.data); // Обработайте ошибку
+          console.error(error.response.data);
         }
     }
   },
