@@ -9,12 +9,25 @@ from routes.problems.route import problems_router
 from routes.auth.route import auth_router
 from multiprocessing import Process
 from tg_bot import start_bot
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(
     title=settings.app_name,
     version="0.0.1",
 )
 
+origins = [
+    "http://localhost:8080",  # Замените на адрес вашего фронтенда
+    "http://192.168.0.13:8080/",  # Дополнительные разрешенные домены
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,  # Разрешенные источники
+    allow_credentials=True,
+    allow_methods=["*"],  # Разрешенные методы
+    allow_headers=["*"],  # Разрешенные заголовки
+)
 
 app.include_router(auth_router, tags=['Auth'], prefix='/auth')
 app.include_router(devices_router, tags=['Devices'], prefix='/devices')

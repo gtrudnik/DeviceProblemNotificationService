@@ -84,9 +84,11 @@ class Controller():
     @use_db
     async def get_device_by_id(self, session: AsyncSession, device_id: int):
         device = (await session.execute(select(Device).filter(Device.id == device_id))).scalar()
+        device_type = await self.get_type_device(type_device_id=device.type_device)
+        device_type = device_type.type_device if device_type is not None else None
         if device is None:
-            return "Device with this id doesn't exist"
-        return device
+            return None, None
+        return device, device_type
 
     @use_db
     async def get_all_devices(self, session: AsyncSession):
@@ -125,6 +127,11 @@ class Controller():
     async def get_all_types_devices(self, session: AsyncSession):
         device_types = (await session.execute(select(DeviceType))).scalars().all()
         return device_types
+
+    @use_db
+    async def get_type_device(self, session: AsyncSession, type_device_id: int):
+        device_type = (await session.execute(select(DeviceType).filter(DeviceType.id == type_device_id))).scalar()
+        return device_type
 
     """ Problems """
 
