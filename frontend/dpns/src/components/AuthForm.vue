@@ -34,6 +34,7 @@
 <script>
 
 import axios from 'axios';
+axios.defaults.withCredentials = true;
 export default {
   name: 'auth_form',
   data() {
@@ -47,6 +48,7 @@ export default {
       const response = await axios.post('http://127.0.0.1:8000/auth/auth',
         {"user": this.email, "password": this.password},
       );
+      console.log(response.data.access_token);
       this.email = '';
       this.password = '';
     }
