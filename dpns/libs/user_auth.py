@@ -24,7 +24,7 @@ async def get_token(request: Request, response: Response):
     """
     token = request.cookies.get('access_token')
     if not token:
-        return False
+        return None
         # raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Token not found')
     try:
         await get_data_from_token(token)

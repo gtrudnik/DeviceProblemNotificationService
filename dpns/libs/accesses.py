@@ -2,7 +2,7 @@ from fastapi import HTTPException, status
 
 
 async def get_access(token_data, jwt_data, roles: tuple = ("user", "admin", "super_admin")):
-    if token_data is None and jwt_data is None:
+    if token_data is None and (jwt_data is None or not jwt_data):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     if token_data:
         if token_data["role"] not in roles:

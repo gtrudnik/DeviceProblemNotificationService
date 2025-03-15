@@ -32,6 +32,8 @@
 </template>
 
 <script>
+
+import axios from 'axios';
 export default {
   name: 'auth_form',
   data() {
@@ -41,14 +43,12 @@ export default {
     };
   },
   methods: {
-    handleLogin() {
-      // Здесь вы можете добавить логику авторизации (например, API вызов)
-      console.log('Email:', this.email);
-      console.log('Пароль:', this.password);
-      // Ресетить форму
+    async handleLogin() {
+      const response = await axios.post('http://127.0.0.1:8000/auth/auth',
+        {"user": this.email, "password": this.password},
+      );
       this.email = '';
       this.password = '';
-      // Можно перенаправить пользователя после успешного входа
     }
   }
 };

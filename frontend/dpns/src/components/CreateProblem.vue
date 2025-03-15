@@ -43,8 +43,13 @@ export default {
     };
   },
   async created() {
+    axios.defaults.withCredentials = true;
     try {
-      const response = await axios.get('http://127.0.0.1:8000/devices/get?device_id=2');
+      const response = await axios.get('http://127.0.0.1:8000/devices/get?device_id=2',
+      {
+      //withCredentials: true,
+      }
+      );
       const deviceData = response.data;
       this.device_name = deviceData.name;
       this.device_type = deviceData.type_device;
@@ -81,7 +86,7 @@ export default {
           if (this.problemType !== "Другая проблема") {
             params.append('type_problem', this.problemType);
           }
-          const response = await axios.post(`http://127.0.0.1:8000/problems/create?${params.toString()}`);
+          const response = await axios.post(`http://127.0.0.1:8000/problems/create?${params.toString()}`,);
           console.log(response.data);
           this.$router.push('user_problems');
         } catch (error) {

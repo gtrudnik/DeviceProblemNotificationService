@@ -1,16 +1,22 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 from dpns.db.connector import controller
 from dpns.schemas.status import Status
-from dpns.libs.user_auth import get_token
 from dpns.tg_bot import send_message
+from typing import Annotated
+from dpns.libs.token_auth import has_token
+from dpns.libs.user_auth import get_token
+from dpns.libs.accesses import get_access
 
 problems_router = APIRouter()
 
 
 @problems_router.post("/create")
-async def create_problem(device_id: int,
+async def create_problem(jwt_data: Annotated[dict | None, Depends(get_token)],
+                         token_data: Annotated[dict | None, Depends(has_token)],
+                         device_id: int,
                          description: str | None = None,
                          type_problem: str | None = None):
+    auth_type = await get_access(token_data=token_data, jwt_data=jwt_data)
     await controller.create_problem(author_id=1,
                                     device_id=device_id,
                                     description=description,
@@ -55,7 +61,10 @@ async def get_problem(problem_id: int):
 
 
 @problems_router.get("/get_by_author")
-async def get_problems_by_author(author: int):
+async def get_problems_by_author(jwt_data: Annotated[dict | None, Depends(get_token)],
+                                 token_data: Annotated[dict | None, Depends(has_token)],
+                                 author: int):
+    auth_type = await get_access(token_data=token_data, jwt_data=jwt_data)
     problems = await controller.get_problems_by_author(author=author)
     return problems
 

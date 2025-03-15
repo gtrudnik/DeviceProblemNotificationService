@@ -25,5 +25,5 @@ async def auth(response: Response, login_form: LoginForm) -> AuthResponse:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                             detail="Wrong login or password")
     token = await create_access_token({"login": login_form.user})
-    response.set_cookie("access_token", token, httponly=True)
+    response.set_cookie("access_token", token, httponly=True, secure=True, samesite='none')
     return AuthResponse(access_token=token, token_type="jwt", email=login_form.user)
