@@ -28,6 +28,7 @@
 import axios from 'axios';
 
 export default {
+  name: 'create_problem',
   data() {
     return {
       device_name: '',

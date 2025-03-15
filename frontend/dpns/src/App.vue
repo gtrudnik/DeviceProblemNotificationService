@@ -1,14 +1,16 @@
 <template>
-  <CreateProblem/>
+  <router-view></router-view>
 </template>
 
 <script>
-import CreateProblem from './components/CreateProblem.vue'
+//import CreateProblem from './components/CreateProblem.vue'
+//import AuthForm from './components/AuthForm.vue'
 
 export default {
   name: 'App',
   components: {
-    CreateProblem
+    //CreateProblem,
+    //AuthForm
   }
 }
 </script>
