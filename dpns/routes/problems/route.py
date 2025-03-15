@@ -24,7 +24,10 @@ async def create_problem(jwt_data: Annotated[dict | None, Depends(get_token)],
                                     type_problem=type_problem)
     admins = await controller.get_device_admins(device_id=device_id)
     tg_admins = [admin.tg_id for admin in admins if admin.tg_id is not None]
-    await send_message(tg_admins, "test_for_admin")
+    try:
+        await send_message(tg_admins, "test_for_admin")
+    except:
+        print("error tg send")
     # TODO: user who create problem
 
 
@@ -34,7 +37,10 @@ async def change_status_problem(problem_id: int,
     await controller.change_problem_status(problem_id=problem_id, status=status)
     authors = await controller.get_authors_by_problem(problem=problem_id)
     tg_authors = [author.tg_id for author in authors if author.tg_id is not None]
-    await send_message(tg_authors, "test_for_authors")
+    try:
+        await send_message(tg_authors, "test_for_authors")
+    except:
+        print("error tg send")
 
 
 @problems_router.post("/set_resolver")
