@@ -2,9 +2,9 @@
   <div class="container mt-5">
         <h2 class="text-center">Заявка о проблеме на устройстве</h2>
         <p>Название устройства: {{ device_name }} </p>
-        <p>Тип: {{ device_type }}</p>
-        <p>Расположение: {{ device_location }}</p>
-        <p>Описание: {{ device_description }}</p>
+        <p v-show="device_type">Тип: {{ device_type }}</p>
+        <p v-show="device_location">Расположение: {{ device_location }}</p>
+        <p v-show="device_description">Описание: {{ device_description }}</p>
         <hr>
         <form>
             <div class="form-group">
@@ -83,6 +83,7 @@ export default {
           }
           const response = await axios.post(`http://127.0.0.1:8000/problems/create?${params.toString()}`);
           console.log(response.data);
+          this.$router.push('user_problems');
         } catch (error) {
           console.error(error.response.data);
         }
