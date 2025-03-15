@@ -17,7 +17,8 @@ async def create_problem(jwt_data: Annotated[dict | None, Depends(get_token)],
                          description: str | None = None,
                          type_problem: str | None = None):
     auth_type = await get_access(token_data=token_data, jwt_data=jwt_data)
-    await controller.create_problem(author_id=1,
+    print(jwt_data)
+    await controller.create_problem(author_id=jwt_data["id"],
                                     device_id=device_id,
                                     description=description,
                                     type_problem=type_problem)
@@ -63,9 +64,9 @@ async def get_problem(problem_id: int):
 @problems_router.get("/get_by_author")
 async def get_problems_by_author(jwt_data: Annotated[dict | None, Depends(get_token)],
                                  token_data: Annotated[dict | None, Depends(has_token)],
-                                 author: int):
+                                 author: int|None = None):
     auth_type = await get_access(token_data=token_data, jwt_data=jwt_data)
-    problems = await controller.get_problems_by_author(author=author)
+    problems = await controller.get_problems_by_author(author=author if author is not None else jwt_data["id"])
     return problems
 
 
