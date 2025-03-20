@@ -9,7 +9,15 @@ import router from './router/router';
 
 export default {
   router,
+  created() {
+    if (!localStorage.getItem('is_login')) {
+      this.$router.push('/auth_form')
+    }  // else if (localStorage.getItem('usernameW') && (this.isLogin)) {
+      //this.$router.push('/home')
+    // }
+  },
 }
+
 </script>
 
 <style>

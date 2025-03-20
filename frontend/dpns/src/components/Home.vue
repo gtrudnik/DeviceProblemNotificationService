@@ -4,9 +4,8 @@
 
 <script>
 
-import axios from 'axios';
 export default {
-  name: '',
+  name: 'homePage',
   data() {
     return {
       email: '',

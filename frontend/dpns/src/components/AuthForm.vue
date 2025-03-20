@@ -51,6 +51,8 @@ export default {
       console.log(response.data.access_token);
       this.email = '';
       this.password = '';
+      localStorage.setItem('is_login', true)
+      //this.$router.push(this.$store.state.previousRoute.fullPath);
     }
   }
 };
