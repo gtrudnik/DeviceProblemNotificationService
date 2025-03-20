@@ -91,6 +91,11 @@ class Controller():
         return device, device_type
 
     @use_db
+    async def get_list_devices(self, session: AsyncSession, device_id: list[int]):
+        devices = (await session.execute(select(Device).filter(Device.id.in_(device_id)))).scalars().all()
+        return devices
+
+    @use_db
     async def get_all_devices(self, session: AsyncSession):
         devices = (await session.execute(select(Device))).scalars().all()
         return devices

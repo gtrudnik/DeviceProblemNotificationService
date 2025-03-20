@@ -19,6 +19,7 @@
                 <p class="card-text" v-show="problem.problemType"><strong>Тип проблемы:</strong> {{ problem.problemType }}</p>
                 <p class="card-text" v-show="problem.problemDescription"><strong>Описание:</strong> {{ problem.problemDescription }}</p>
                 <p class="card-text"><strong>Статус:</strong> {{ problem.status }}</p>
+                <p class="card-text"><strong>Дата создания заявки:</strong> {{ problem.date_create }}</p>
               </div>
             </div>
         </div>
@@ -46,10 +47,11 @@ export default {
       for (const problem of problemsData) {
         const problem_ = {
           id: problem.id,
-          deviceName: problem.device,
-          deviceLocation: 'Кабинет 101',
+          deviceName: problem.device_name,
+          deviceLocation: `корпус ${problem.device_building}, этаж ${problem.device_floor}, аудитория ${problem.device_room}`,
           problemType: problem.type_problem,
           problemDescription: problem.description,
+          date_create: problem.date_created,
         }
 
         if (problem.resolver){

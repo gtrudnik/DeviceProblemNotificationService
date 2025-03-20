@@ -6,8 +6,24 @@ from typing import Annotated
 from dpns.libs.token_auth import has_token
 from dpns.libs.user_auth import get_token
 from dpns.libs.accesses import get_access
+from pydantic import BaseModel
 
 problems_router = APIRouter()
+
+
+class ProblemResponse(BaseModel):
+    description: str
+    status: str
+    resolver: int | None
+    type_problem: str | None = None
+    date_created: str
+
+    device_id: int
+    device_name: str
+    device_building: str
+    device_floor: int
+    device_room: str
+
 
 
 @problems_router.post("/create")
@@ -73,7 +89,27 @@ async def get_problems_by_author(jwt_data: Annotated[dict | None, Depends(get_to
                                  author: int|None = None):
     auth_type = await get_access(token_data=token_data, jwt_data=jwt_data)
     problems = await controller.get_problems_by_author(author=author if author is not None else jwt_data["id"])
-    return problems
+    devices_id = [i.device for i in problems]
+    devices = await controller.get_list_devices(devices_id)
+    problems_response = []
+    for problem in problems:
+        for device in devices:
+            print(device)
+            if device.id == problem.device:
+                problems_response.append(ProblemResponse(
+                    description=problem.description,
+                    status=problem.status,
+                    resolver=problem.resolver,
+                    type_problem=problem.type_problem,
+                    date_created=problem.date_created.strftime("%Y-%m-%d %H:%M:%S"),
+
+                    device_id=device.id,
+                    device_name=device.name,
+                    device_building=device.building,
+                    device_floor=device.floor,
+                    device_room=device.room,
+                ))
+    return problems_response
 
 
 @problems_router.get("/get_by_resolver")
