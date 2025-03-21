@@ -266,6 +266,19 @@ class Controller():
         return problem
 
     @use_db
+    async def get_new_problems_by_devices(self,
+                                session: AsyncSession,
+                                devices_id: list[int]):
+        problem = (await session.execute(select(Problem).
+                                         filter(and_(Problem.device.in_(devices_id),
+                                                     Problem.resolver.is_(None)
+                                                                     )))).scalars().all()
+        if problem is None:
+            return "Problem with this id doesn't exist"
+        return problem
+
+
+    @use_db
     async def get_all_problems(self,
                                session: AsyncSession):
         problems = (await session.execute(select(Problem))).scalars().all()
