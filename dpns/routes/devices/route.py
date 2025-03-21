@@ -1,6 +1,10 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from dpns.db.connector import controller
 from pydantic import BaseModel
+from typing import Annotated
+from dpns.libs.token_auth import has_token
+from dpns.libs.user_auth import get_token
+from dpns.libs.accesses import get_access
 
 devices_router = APIRouter()
 
@@ -18,13 +22,16 @@ class DeviceResponse(BaseModel):
 
 
 @devices_router.post("/create")
-async def create_device(name: str,
+async def create_device(jwt_data: Annotated[dict | None, Depends(get_token)],
+                        token_data: Annotated[dict | None, Depends(has_token)],
+                        name: str,
                         building: str,
                         floor: int,
                         room: str,
                         location_description: str | None = None,
                         description: str | None = None,
                         type_device: int | None = None):
+    auth_type = await get_access(token_data=token_data, jwt_data=jwt_data, roles=("admin", "super_admin"))
     try:
         await controller.create_device(name=name,
                                        type_device=type_device,
@@ -91,6 +98,14 @@ async def get_device_by_admin(admin_id: int):
 async def get_all_devices():
     devices = await controller.get_all_devices()
     return devices
+
+
+@devices_router.get("/get_all_type_devices")
+async def get_all_type_devices(jwt_data: Annotated[dict | None, Depends(get_token)],
+                               token_data: Annotated[dict | None, Depends(has_token)],):
+    auth_type = await get_access(token_data=token_data, jwt_data=jwt_data, roles=("admin", "super_admin"))
+    types_devices = await controller.get_all_types_devices()
+    return types_devices
 
 
 @devices_router.delete("/delete")
