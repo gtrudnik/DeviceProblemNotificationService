@@ -36,6 +36,8 @@
 //import AuthForm from './components/AuthForm.vue'
 import router from './router/router';
 
+import axios from 'axios';
+axios.defaults.withCredentials = true;
 export default {
   router,
   data() {
@@ -62,10 +64,10 @@ export default {
     }
   },
   methods: {
-    logout(){
+    async logout(){
         localStorage.removeItem('role')
         this.$router.push('/auth_form')
-        console.log(1);
+        await axios.post('http://127.0.0.1:8000/auth/logout',);
     }
   }
 }

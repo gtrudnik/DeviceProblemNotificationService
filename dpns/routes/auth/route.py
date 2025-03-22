@@ -30,3 +30,10 @@ async def auth(response: Response, login_form: LoginForm) -> AuthResponse:
     response.set_cookie("access_token", token, httponly=True, secure=True, samesite='none')
     user = await controller.get_user(login=login_form.user)
     return AuthResponse(access_token=token, token_type="jwt", email=login_form.user, role=user.role)
+
+
+@auth_router.post("/logout")
+async def logout(response: Response):
+    """Logout route to clear the access token cookie"""
+    response.delete_cookie("access_token", httponly=True, secure=True, samesite='none')
+    return {"detail": "Successfully logged out"}
