@@ -33,13 +33,14 @@ async def create_device(jwt_data: Annotated[dict | None, Depends(get_token)],
                         type_device: int | None = None):
     auth_type = await get_access(token_data=token_data, jwt_data=jwt_data, roles=("admin", "super_admin"))
     try:
-        await controller.create_device(name=name,
-                                       type_device=type_device,
-                                       building=building,
-                                       floor=floor,
-                                       room=room,
-                                       location_description=location_description,
-                                       description=description)
+        device_id = await controller.create_device(name=name,
+                                                   type_device=type_device,
+                                                   building=building,
+                                                   floor=floor,
+                                                   room=room,
+                                                   location_description=location_description,
+                                                   description=description)
+        await controller.add_admin_device(device_id=device_id, admin_id=jwt_data['id'])
     except Exception as e:
         print(e)
         return "Error while creating device"

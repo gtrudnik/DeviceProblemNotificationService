@@ -33,6 +33,7 @@ class Controller():
                         type_device=type_device)
         session.add(device)
         await session.commit()
+        return device.id
 
     @use_db
     async def update_device(self,
