@@ -4,6 +4,7 @@ import CreateDevice from '../components/CreateDevice.vue'
 import AuthForm from '../components/AuthForm.vue'
 import UserProblems from '../components/UserProblems.vue'
 import AdminProblems from '../components/AdminProblems.vue'
+import AdminDevices from '../components/AdminDevices.vue'
 import Home from '../components/Home.vue'
 
 const routes = [
@@ -13,6 +14,7 @@ const routes = [
   {path: '/create_device', component: CreateDevice,},
   {path: '/user_problems', component: UserProblems,},
   {path: '/admin_problems', component: AdminProblems,},
+  {path: '/admin_devices', component: AdminDevices,},
 ];
 
 const router = createRouter({

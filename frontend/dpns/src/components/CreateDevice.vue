@@ -1,5 +1,5 @@
 <template>
-  <div class="container mt-5 mb-5">
+  <div class="container mb-5">
         <h2 class="text-center">Создание нового устройства</h2>
         <form >
             <div class="form-row">
@@ -7,9 +7,9 @@
                 <input type="text" class="form-control" id="deviceName" v-model="deviceName" placeholder="Введите название устройства" required>
             </div>
             <div class="form-group">
-                <label for="problemType">Тип устройства</label>
-                <select class="form-control" id="problemType" v-model="problemType">
-                    <option v-for="(i, index) in problemTypes" :key="index" :value="i">{{ i }}</option>
+                <label for="deviceType">Тип устройства</label>
+                <select class="form-control" id="deviceType" v-model="deviceType">
+                    <option v-for="(i, index) in deviceTypes" :key="index" :value="i">{{ i }}</option>
                 </select>
             </div>
             <div class="form-group">
@@ -48,26 +48,26 @@ export default {
       deviceName: '',
       deviceDescription: '',
       building: '',
-      floor: 1,
+      floor: '',
       room: '',
       locationDescription: '',
 
-      problemType: 'Другой тип',
-      problemTypes: ['Другой тип'],
+      deviceType: 'Другой тип',
+      deviceTypes: ['Другой тип'],
     };
   },
   async created() {
     axios.defaults.withCredentials = true;
     try {
       const response = await axios.get(`http://127.0.0.1:8000/devices/get_all_type_devices`);
-      const problemTypesData = response.data;
-      console.log(problemTypesData);
-      const problem_types = ['Другой тип'];
-      for (const problemType of problemTypesData) {
-        problem_types.push(problemType.type_device);
-        console.log(problemType.type_device);
+      const deviceTypesData = response.data;
+      console.log(deviceTypesData);
+      const device_types = ['Другой тип'];
+      for (const deviceType of deviceTypesData) {
+        device_types.push(deviceType.type_device);
+        console.log(deviceType.type_device);
       }
-      this.problemTypes = problem_types;
+      this.deviceTypes = device_types;
     } catch (error) {
       console.error(error.response.data);
     }
@@ -84,12 +84,12 @@ export default {
             room: this.room,
             location_description: this.locationDescription
           });
-          if (this.problemType !== "Другой тип") {
-            params.append('type_device', this.problemType);
+          if (this.deviceType !== "Другой тип") {
+            params.append('type_device', this.deviceType);
           }
           const response = await axios.post(`http://127.0.0.1:8000/devices/create?${params.toString()}`,);
           console.log(response.data);
-          this.$router.push('user_problems');
+          this.$router.push('admin_devices');
         } catch (error) {
           console.error(error.response.data);
         }

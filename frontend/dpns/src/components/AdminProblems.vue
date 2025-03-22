@@ -1,5 +1,5 @@
 <template>
-  <div class="container mt-5">
+  <div class="container">
         <h2 class="text-center mb-3 mx-auto">Заявки о проблемах на устройстве</h2>
         <div class="mb-3 text-center">
             <div class="btn-group" role="group" aria-label="Кнопки фильтрации">

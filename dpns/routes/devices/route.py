@@ -89,8 +89,11 @@ async def get_device(device_id: int):
 
 
 @devices_router.get("/get_by_admin")
-async def get_device_by_admin(admin_id: int):
-    devices = await controller.get_admin_devices(admin_id=admin_id)
+async def get_device_by_admin(jwt_data: Annotated[dict | None, Depends(get_token)],
+                              token_data: Annotated[dict | None, Depends(has_token)],
+                              admin_id: int | None = None):
+    auth_type = await get_access(token_data=token_data, jwt_data=jwt_data, roles=("admin", "super_admin"))
+    devices = await controller.get_admin_devices(admin_id=admin_id if admin_id is not None else jwt_data['id'])
     return devices
 
 
