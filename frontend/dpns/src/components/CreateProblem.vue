@@ -31,6 +31,7 @@ export default {
   name: 'create_problem',
   data() {
     return {
+      device_id: this.$route.params.id,
       device_name: '',
       device_type: '',
       device_location: '',
@@ -43,9 +44,10 @@ export default {
     };
   },
   async created() {
+    console.log(this.$route.params.id);
     axios.defaults.withCredentials = true;
     try {
-      const response = await axios.get('http://127.0.0.1:8000/devices/get?device_id=2',
+      const response = await axios.get(`http://127.0.0.1:8000/devices/get?device_id=${this.device_id}`,
       {
       //withCredentials: true,
       }
@@ -78,7 +80,7 @@ export default {
         event.preventDefault();
         try {
           const params = new URLSearchParams({
-            device_id: 2,
+            device_id: this.device_id,
           });
           if (this.problemDescription !== "") {
             params.append('description', this.problemDescription);
@@ -88,7 +90,7 @@ export default {
           }
           const response = await axios.post(`http://127.0.0.1:8000/problems/create?${params.toString()}`,);
           console.log(response.data);
-          this.$router.push('user_problems');
+          this.$router.push('/user_problems');
         } catch (error) {
           console.error(error.response.data);
         }

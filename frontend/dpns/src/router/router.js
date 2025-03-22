@@ -10,7 +10,7 @@ import Home from '../components/Home.vue'
 const routes = [
   {path: '/', component: Home,},
   {path: '/auth_form', component: AuthForm,},
-  {path: '/create_problem', component: CreateProblem,},
+  {path: '/create_problem/:id', component: CreateProblem,},
   {path: '/create_device', component: CreateDevice,},
   {path: '/user_problems', component: UserProblems,},
   {path: '/admin_problems', component: AdminProblems,},
