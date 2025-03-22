@@ -1,6 +1,6 @@
 <template>
     <nav v-if="showNavAdmin" class="navbar navbar-expand-lg navbar-light bg-primary mb-3">
-        <a class="navbar-brand text-white" href="#" style="font-size: 1.5rem;"><i class="fas fa-cog"></i> DPNS</a>
+        <a class="navbar-brand text-white" style="font-size: 1.5rem;"><i class="fas fa-cog"></i> DPNS</a>
         <div class="collapse navbar-collapse d-flex justify-content-between align-items-center" id="navbarNav">
             <ul class="navbar-nav mx-auto">
                 <li class="nav-item">

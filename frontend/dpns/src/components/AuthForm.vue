@@ -40,8 +40,14 @@ export default {
   data() {
     return {
       email: '',
-      password: ''
+      password: '',
+      previousRoute: null,
     };
+  },
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      vm.previousRoute = from.path;
+    });
   },
   methods: {
     async handleLogin() {
@@ -52,7 +58,9 @@ export default {
       this.email = '';
       this.password = '';
       localStorage.setItem('role', response.data.role)
-      if (response.data.role === "admin"){
+      if (this.previousRoute !== "/"){
+        this.$router.back();
+      } else if (response.data.role === "admin"){
         this.$router.push('/admin_problems');
       } else {
         this.$router.push('/user_problems');
