@@ -45,7 +45,7 @@ export default {
   async created() {
     axios.defaults.withCredentials = true;
     try {
-      const response = await axios.get(`http://127.0.0.1:8000/problems/get_by_resolver`,);
+      const response = await axios.get(`${this.$urlServer}/problems/get_by_resolver`,);
       const problemsData = response.data;
       const problems = [];
       for (const problem of problemsData) {
@@ -85,7 +85,7 @@ export default {
     async setMeResolver(problem_id) {
       this.activeFilter = 'active';
       try{
-        const response = await axios.post(`http://127.0.0.1:8000/problems/set_resolver?problem_id=${parseInt(problem_id, 10)}`);
+        const response = await axios.post(`${this.$urlServer}/problems/set_resolver?problem_id=${parseInt(problem_id, 10)}`);
         for (let i = 0; i < this.problems_displayed.length; i++) {
             if (this.problems_displayed[i].id === problem_id) {
               this.problems_displayed[i].status = "В работе";
@@ -100,7 +100,7 @@ export default {
     async setResolved(problem_id) {
       this.activeFilter = 'completed';
       try{
-        const response = await axios.post(`http://127.0.0.1:8000/problems/change_status?problem_id=${parseInt(problem_id, 10)}&status=resolved`);
+        const response = await axios.post(`${this.$urlServer}/problems/change_status?problem_id=${parseInt(problem_id, 10)}&status=resolved`);
         for (let i = 0; i < this.problems_displayed.length; i++) {
             if (this.problems_displayed[i].id === problem_id) {
               this.problems_displayed[i].status = 'Решено';

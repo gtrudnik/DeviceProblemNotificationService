@@ -47,7 +47,7 @@ export default {
     console.log(this.$route.params.id);
     axios.defaults.withCredentials = true;
     try {
-      const response = await axios.get(`http://127.0.0.1:8000/devices/get?device_id=${this.device_id}`,
+      const response = await axios.get(`${this.$urlServer}/devices/get?device_id=${this.device_id}`,
       {
       //withCredentials: true,
       }
@@ -63,7 +63,7 @@ export default {
       console.error(error.response.data);
     }
     try {
-      const response = await axios.get(`http://127.0.0.1:8000/problems/get_types?type_device=${this.device_type_id}`);
+      const response = await axios.get(`${this.$urlServer}/problems/get_types?type_device=${this.device_type_id}`);
       const problemTypesData = response.data;
       const problem_types = ['Другая проблема'];
       for (const problemType of problemTypesData) {
@@ -88,7 +88,7 @@ export default {
           if (this.problemType !== "Другая проблема") {
             params.append('type_problem', this.problemType);
           }
-          const response = await axios.post(`http://127.0.0.1:8000/problems/create?${params.toString()}`,);
+          const response = await axios.post(`${this.$urlServer}/problems/create?${params.toString()}`,);
           console.log(response.data);
           this.$router.push('/user_problems');
         } catch (error) {

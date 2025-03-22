@@ -41,7 +41,7 @@ export default {
   async created() {
     axios.defaults.withCredentials = true;
     try {
-      const response = await axios.get(`http://127.0.0.1:8000/problems/get_by_author`,);
+      const response = await axios.get(`${this.$urlServer}/problems/get_by_author`,);
       const problemsData = response.data;
       const problems = [];
       for (const problem of problemsData) {

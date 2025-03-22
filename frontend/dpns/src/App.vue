@@ -67,7 +67,7 @@ export default {
     async logout(){
         localStorage.removeItem('role')
         this.$router.push('/auth_form')
-        await axios.post('http://127.0.0.1:8000/auth/logout',);
+        await axios.post(`${this.$urlServer}/auth/logout`,);
     }
   }
 }

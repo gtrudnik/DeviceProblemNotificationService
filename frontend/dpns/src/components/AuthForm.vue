@@ -45,7 +45,7 @@ export default {
   },
   methods: {
     async handleLogin() {
-      const response = await axios.post('http://127.0.0.1:8000/auth/auth',
+      const response = await axios.post(`${this.$urlServer}/auth/auth`,
         {"user": this.email, "password": this.password},
       );
       console.log(response.data.access_token);

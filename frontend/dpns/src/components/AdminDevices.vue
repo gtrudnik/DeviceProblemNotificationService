@@ -27,7 +27,7 @@ export default {
   async created() {
     axios.defaults.withCredentials = true;
     try {
-      const response = await axios.get(`http://127.0.0.1:8000/devices/get_by_admin`,);
+      const response = await axios.get(`${this.$urlServer}/devices/get_by_admin`,);
       const devicesData = response.data;
       console.log(devicesData);
       const devices = [];

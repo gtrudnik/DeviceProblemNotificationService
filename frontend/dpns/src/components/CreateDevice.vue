@@ -59,7 +59,7 @@ export default {
   async created() {
     axios.defaults.withCredentials = true;
     try {
-      const response = await axios.get(`http://127.0.0.1:8000/devices/get_all_type_devices`);
+      const response = await axios.get(`${this.$urlServer}/devices/get_all_type_devices`);
       const deviceTypesData = response.data;
       console.log(deviceTypesData);
       const device_types = ['Другой тип'];
@@ -87,7 +87,7 @@ export default {
           if (this.deviceType !== "Другой тип") {
             params.append('type_device', this.deviceType);
           }
-          const response = await axios.post(`http://127.0.0.1:8000/devices/create?${params.toString()}`,);
+          const response = await axios.post(`${this.$urlServer}/devices/create?${params.toString()}`,);
           console.log(response.data);
           this.$router.push('admin_devices');
         } catch (error) {
