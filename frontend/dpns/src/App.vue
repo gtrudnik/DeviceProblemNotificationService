@@ -19,6 +19,10 @@
                     <router-link to="/create_device" class="nav-link text-white"
                     style="font-size: 1.2rem;">Создать устройство</router-link>
                 </li>
+                <li class="nav-item">
+                    <router-link to="/connect_tg" class="nav-link text-white"
+                    style="font-size: 1.2rem;">Привязать телеграмм</router-link>
+                </li>
             </ul>
             <ul class="navbar-nav">
                 <li class="nav-item">
@@ -48,7 +52,7 @@ export default {
   computed: {
     showNavAdmin() {
         return ['/create_device', '/admin_devices', '/admin_problems',
-        '/user_problems', '/create_problem'].includes(this.$route.path)
+        '/user_problems', '/create_problem', '/connect_tg'].includes(this.$route.path)
     },
   },
   created() {
