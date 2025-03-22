@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from fastapi import APIRouter, HTTPException, status, Response
 from dpns.libs.user_auth import create_access_token
+from dpns.db.connector import controller
 
 auth_router = APIRouter()
 
@@ -14,6 +15,7 @@ class AuthResponse(BaseModel):
     access_token: str
     token_type: str
     email: str
+    role: str
 
 
 @auth_router.post("/auth")
@@ -26,4 +28,5 @@ async def auth(response: Response, login_form: LoginForm) -> AuthResponse:
                             detail="Wrong login or password")
     token = await create_access_token({"login": login_form.user})
     response.set_cookie("access_token", token, httponly=True, secure=True, samesite='none')
-    return AuthResponse(access_token=token, token_type="jwt", email=login_form.user)
+    user = await controller.get_user(login=login_form.user)
+    return AuthResponse(access_token=token, token_type="jwt", email=login_form.user, role=user.role)

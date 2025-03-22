@@ -51,7 +51,12 @@ export default {
       console.log(response.data.access_token);
       this.email = '';
       this.password = '';
-      localStorage.setItem('is_login', true)
+      localStorage.setItem('role', response.data.role)
+      if (response.data.role === "admin"){
+        this.$router.push('/admin_problems');
+      } else {
+        this.$router.push('/user_problems');
+      }
       //this.$router.push(this.$store.state.previousRoute.fullPath);
     }
   }
