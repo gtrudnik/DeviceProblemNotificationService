@@ -76,7 +76,10 @@ async def new_device_type(name: str):
 
 
 @devices_router.get("/get")
-async def get_device(device_id: int):
+async def get_device(jwt_data: Annotated[dict | None, Depends(get_token)],
+                     token_data: Annotated[dict | None, Depends(has_token)],
+                     device_id: int):
+    auth_type = await get_access(token_data=token_data, jwt_data=jwt_data)
     device_db, type_device = await controller.get_device_by_id(device_id=device_id)
     return DeviceResponse(device_id=device_db.id,
                           name=device_db.name,

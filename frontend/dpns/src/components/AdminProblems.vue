@@ -73,6 +73,11 @@ export default {
       this.problems = problems;
       this.fill_problems();
     } catch (error) {
+      if (error.response.status === 401) {
+        localStorage.removeItem('role')
+        console.error('Доступ запрещен. Пожалуйста, войдите в систему.');
+        this.$router.push('/auth_form');
+      }
       console.error(error.response.data);
     }
   },
@@ -93,6 +98,11 @@ export default {
         }
         console.log(response);
       } catch (error) {
+        if (error.response.status === 401) {
+          localStorage.removeItem('role')
+          console.error('Доступ запрещен. Пожалуйста, войдите в систему.');
+          this.$router.push('/auth_form');
+        }
         console.error(error.response.data);
       }
       this.fill_problems();
@@ -108,6 +118,11 @@ export default {
         }
         console.log(response);
       } catch (error) {
+        if (error.response.status === 401) {
+          localStorage.removeItem('role')
+          console.error('Доступ запрещен. Пожалуйста, войдите в систему.');
+          this.$router.push('/auth_form');
+        }
         console.error(error.response.data);
       }
       this.fill_problems();

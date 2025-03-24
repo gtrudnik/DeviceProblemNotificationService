@@ -49,6 +49,11 @@ export default {
       }
       this.devices = devices;
     } catch (error) {
+      if (error.response.status === 401) {
+        localStorage.removeItem('role')
+        console.error('Доступ запрещен. Пожалуйста, войдите в систему.');
+        this.$router.push('/auth_form');
+      }
       console.error(error.response.data);
     }
   },

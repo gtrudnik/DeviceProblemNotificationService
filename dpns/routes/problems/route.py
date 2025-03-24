@@ -26,7 +26,6 @@ class ProblemResponse(BaseModel):
     device_room: str
 
 
-
 @problems_router.post("/create")
 async def create_problem(jwt_data: Annotated[dict | None, Depends(get_token)],
                          token_data: Annotated[dict | None, Depends(has_token)],
@@ -160,6 +159,9 @@ async def get_all_problems(jwt_data: dict = Depends(get_token)):
 
 
 @problems_router.get("/get_types")
-async def get_problems_types(type_device: int):
+async def get_problems_types(jwt_data: Annotated[dict | None, Depends(get_token)],
+                             token_data: Annotated[dict | None, Depends(has_token)],
+                             type_device: int):
+    auth_type = await get_access(token_data=token_data, jwt_data=jwt_data)
     problem_types = await controller.get_problem_types(type_device=type_device)
     return problem_types

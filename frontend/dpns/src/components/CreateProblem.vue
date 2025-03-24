@@ -60,6 +60,11 @@ export default {
       this.device_type_id = deviceData.type_device_id;
       console.log(deviceData);
     } catch (error) {
+      if (error.response.status === 401) {
+        localStorage.removeItem('role')
+        console.error('Доступ запрещен. Пожалуйста, войдите в систему.');
+        this.$router.push('/auth_form');
+      }
       console.error(error.response.data);
     }
     try {
@@ -72,6 +77,11 @@ export default {
       }
       this.problemTypes = problem_types;
     } catch (error) {
+      if (error.response.status === 401) {
+        localStorage.removeItem('role')
+        console.error('Доступ запрещен. Пожалуйста, войдите в систему.');
+        this.$router.push('/auth_form');
+      }
       console.error(error.response.data);
     }
   },
@@ -92,6 +102,11 @@ export default {
           console.log(response.data);
           this.$router.push('/user_problems');
         } catch (error) {
+          if (error.response.status === 401) {
+            localStorage.removeItem('role')
+            console.error('Доступ запрещен. Пожалуйста, войдите в систему.');
+            this.$router.push('/auth_form');
+          }
           console.error(error.response.data);
         }
     }
