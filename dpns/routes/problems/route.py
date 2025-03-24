@@ -7,6 +7,7 @@ from dpns.libs.token_auth import has_token
 from dpns.libs.user_auth import get_token
 from dpns.libs.accesses import get_access
 from pydantic import BaseModel
+from datetime import datetime
 
 problems_router = APIRouter()
 
@@ -17,7 +18,7 @@ class ProblemResponse(BaseModel):
     status: str
     resolver: int | None
     type_problem: str | None = None
-    date_created: str
+    date_created: datetime
 
     device_id: int
     device_name: str
@@ -105,7 +106,7 @@ async def get_problems_by_author(jwt_data: Annotated[dict | None, Depends(get_to
                     status=problem.status,
                     resolver=problem.resolver,
                     type_problem=problem.type_problem,
-                    date_created=problem.date_created.strftime("%Y-%m-%d %H:%M:%S"),
+                    date_created=problem.date_created,
 
                     device_id=device.id,
                     device_name=device.name,
@@ -140,7 +141,7 @@ async def get_problems_by_resolver(jwt_data: Annotated[dict | None, Depends(get_
                     status=problem.status,
                     resolver=problem.resolver,
                     type_problem=problem.type_problem,
-                    date_created=problem.date_created.strftime("%Y-%m-%d %H:%M:%S"),
+                    date_created=problem.date_created,
 
                     device_id=device.id,
                     device_name=device.name,

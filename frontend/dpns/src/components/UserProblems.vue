@@ -27,6 +27,7 @@
 </template>
 
 <script>
+import { format } from 'date-fns';
 import axios from 'axios';
 
 export default {
@@ -44,6 +45,7 @@ export default {
       const response = await axios.get(`${this.$urlServer}/problems/get_by_author`,);
       const problemsData = response.data;
       const problems = [];
+      problemsData.sort((a, b) => new Date(b.date_created) - new Date(a.date_created));
       for (const problem of problemsData) {
         const problem_ = {
           id: problem.id,
@@ -51,7 +53,7 @@ export default {
           deviceLocation: `корпус ${problem.device_building}, этаж ${problem.device_floor}, аудитория ${problem.device_room}`,
           problemType: problem.type_problem,
           problemDescription: problem.description,
-          date_create: problem.date_created,
+          date_create: format(problem.date_created, 'dd.MM.yyyy HH:mm'),
         }
 
         if (problem.resolver){
