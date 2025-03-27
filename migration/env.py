@@ -20,6 +20,7 @@ from dpns.db.models.problem import Problem
 from dpns.db.models.problem_type import ProblemType
 from dpns.db.models.problem_author import ProblemAuthor
 from dpns.db.models.tg_chat import TgChat
+from dpns.db.models.tg_code import TgCode
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

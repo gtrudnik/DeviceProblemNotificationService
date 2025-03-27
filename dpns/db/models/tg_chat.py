@@ -12,7 +12,7 @@ class TgChat(Base):
         primary_key=True,
         autoincrement=True
     )
-    tg_id = Column(BigInteger, unique=True)
+    tg_id = Column(BigInteger, unique=True, primary_key=True,)
     stage = Column(String)
     device_id = Column(BigInteger)
     problem_type = Column(String)
