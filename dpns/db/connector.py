@@ -11,6 +11,9 @@ from dpns.db.models.problem import Problem
 from dpns.db.models.problem_type import ProblemType
 from dpns.db.models.problem_author import ProblemAuthor
 from dpns.db.models.tg_chat import TgChat
+from dpns.db.models.tg_code import TgCode
+from random import randint
+from datetime import datetime
 
 
 class Controller():
@@ -451,6 +454,38 @@ class Controller():
         chat.description = None
         await session.commit()
 
+    """ Tg codes """
+
+    @use_db
+    async def check_tg_code(self, session: AsyncSession, tg_id: int, tg_code: int):
+        code = (await session.execute(select(TgCode).filter(TgCode.tg_id == tg_id))).scalar()
+        if code is None:
+            return {"message": "Tg code is not created"}
+        elif code.attempts <= 0:
+            return {"message": "Attempts ended"}
+        elif code.code == tg_code:
+            await session.delete(code)
+            await session.commit()
+            return {"message": "Accepted"}
+        else:
+            code.attempts -= 1
+            await session.commit()
+            return {"message": "Bad code", "attempts": code.attempts}
+
+    @use_db
+    async def create_tg_code(self, session: AsyncSession, tg_id: int):
+        code = (await session.execute(select(TgCode).filter(TgCode.tg_id == tg_id))).scalar()
+        tg_code = randint(100000, 999999)
+        if code is None:
+            code = TgCode(tg_id=tg_id, code=tg_code)
+            session.add(code)
+        else:
+            code.code = tg_code
+            code.attempts = 3
+            code.date_created = datetime.utcnow()
+        await session.commit()
+        return code.code
+
 
 controller = Controller()
 
@@ -480,3 +515,5 @@ import asyncio
 # print(asyncio.run(controller.add_token("lol", "admin")))
 # print(asyncio.run(controller.check_token("4c10953948de466caaac1b98619ec8b1")))
 # print(asyncio.run(controller.del_token("lol")))
+# print(asyncio.run(controller.create_tg_code(331467077)))
+# print(asyncio.run(controller.check_tg_code(331467077, 549335)))
