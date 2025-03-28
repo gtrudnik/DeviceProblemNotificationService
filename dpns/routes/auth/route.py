@@ -1,7 +1,11 @@
 from pydantic import BaseModel
-from fastapi import APIRouter, HTTPException, status, Response
+from typing import Annotated
+from fastapi import APIRouter, HTTPException, status, Response, Depends
 from dpns.libs.user_auth import create_access_token
 from dpns.db.connector import controller
+from dpns.libs.token_auth import has_token
+from dpns.libs.user_auth import get_token
+from dpns.libs.accesses import get_access
 
 auth_router = APIRouter()
 
@@ -37,3 +41,15 @@ async def logout(response: Response):
     """Logout route to clear the access token cookie"""
     response.delete_cookie("access_token", httponly=True, secure=True, samesite='none')
     return {"detail": "Successfully logged out"}
+
+
+@auth_router.post("/connect_tg")
+async def connect_tg(jwt_data: Annotated[dict | None, Depends(get_token)],
+                     token_data: Annotated[dict | None, Depends(has_token)],
+                     tg_id: int, tg_code: int):
+    """ Connect tg """
+    auth_type = await get_access(token_data=token_data, jwt_data=jwt_data)
+
+    res = await controller.check_tg_code(tg_id=tg_id, tg_code=tg_code)
+
+    return res
