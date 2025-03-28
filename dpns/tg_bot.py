@@ -47,6 +47,15 @@ async def help_message(message):
     await bot.send_message(message.chat.id, help_text)
 
 
+@bot.message_handler(commands=['code'])
+@check_permission
+async def code_message(message):
+    code = await controller.create_tg_code(tg_id=message.chat.id)
+    await bot.send_message(message.chat.id,
+                           f"Ваш телеграм id: {message.chat.id}\nКод: ||{str(code)}||",
+                           parse_mode='MarkdownV2')
+
+
 @bot.message_handler(content_types=['text'])
 @check_permission
 async def new_message(message):
