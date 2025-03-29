@@ -49,7 +49,28 @@ async def connect_tg(jwt_data: Annotated[dict | None, Depends(get_token)],
                      tg_id: int, tg_code: int):
     """ Connect tg """
     auth_type = await get_access(token_data=token_data, jwt_data=jwt_data)
-
     res = await controller.check_tg_code(tg_id=tg_id, tg_code=tg_code)
+    print(res)
+    if res["message"] == "Accepted":
+        await controller.connect_tg(user_id=jwt_data['id'], tg_id=tg_id)
 
     return res
+
+
+@auth_router.post("/unconnect_tg")
+async def unconnect_tg(jwt_data: Annotated[dict | None, Depends(get_token)],
+                       token_data: Annotated[dict | None, Depends(has_token)],):
+    """ Unconnect tg """
+    auth_type = await get_access(token_data=token_data, jwt_data=jwt_data)
+    await controller.unconnect_tg(user_id=jwt_data['id'])
+
+
+@auth_router.post("/get_tg")
+async def get_tg(jwt_data: Annotated[dict | None, Depends(get_token)],
+                       token_data: Annotated[dict | None, Depends(has_token)],):
+    """ Get tg """
+    auth_type = await get_access(token_data=token_data, jwt_data=jwt_data)
+    user = await controller.get_user(user_id=jwt_data['id'])
+    return {"tg_id": user.tg_id}
+
+

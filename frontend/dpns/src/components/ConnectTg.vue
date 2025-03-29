@@ -1,5 +1,5 @@
 <template>
-    <div class="container mt-5">
+    <div class="container mt-5" v-if="is_visible_form">
         <h2 class="mb-4">Подключение аккаунта к телеграм</h2>
         <form @submit.prevent="connect_tg">
             <div class="form-group">
@@ -13,6 +13,11 @@
             <button type="submit" class="btn btn-primary">Подключить</button>
         </form>
     </div>
+    <div class="container mt-5" v-if="is_visible_tg_label">
+        <h2 class="mb-4">Ваш аккаунт подключён к телеграм</h2>
+        <p>Id вашего телеграм: {{ tg_id_label }} </p>
+        <button @click="unconnect_tg" type="submit" class="btn btn-primary">Отключить телеграм</button>
+    </div>
 </template>
 
 <script>
@@ -22,9 +27,40 @@ export default {
   name: 'connectTg',
   data() {
     return {
+      is_visible_form: false,
+      is_visible_tg_label: false,
+      tg_id_label: '',
       tg_id: '',
       tg_code: ''
     };
+  },
+  watch: {
+    tg_id_label(newValue) {
+      console.log(newValue)
+      if (this.tg_id_label) {
+        this.is_visible_form = false;
+        this.is_visible_tg_label = true;
+      } else {
+        this.is_visible_form = true;
+        this.is_visible_tg_label = false;
+      }
+    },
+  },
+  async created() {
+    axios.defaults.withCredentials = true;
+    try {
+      const response = await axios.post(`${this.$urlServer}/auth/get_tg`,);
+      console.log(response.data);
+      this.tg_id_label = response.data.tg_id;
+    } catch (error) {
+      if (error.response.status === 401) {
+        localStorage.removeItem('role')
+        console.error('Доступ запрещен. Пожалуйста, войдите в систему.');
+        this.$router.push('/auth_form');
+      }
+      console.error(error.response.data);
+    }
+    await this.show_label();
   },
   methods: {
     async connect_tg() {
@@ -33,13 +69,12 @@ export default {
             tg_id: this.tg_id,
             tg_code: this.tg_code,
           });
-          console.log(1);
           const response = await axios.post(`${this.$urlServer}/auth/connect_tg?${params.toString()}`,);
-          console.log(2);
           console.log(response.data);
-          console.log(3);
+          this.tg_id_label = this.tg_id;
+          this.tg_id = '';
+          this.tg_code = '';
         } catch (error) {
-          console.log(3);
           if (error.response.status === 401) {
             localStorage.removeItem('role')
             console.error('Доступ запрещен. Пожалуйста, войдите в систему.');
@@ -48,6 +83,29 @@ export default {
           console.error(error.response.data);
         }
     },
+    async unconnect_tg() {
+        try {
+          const response = await axios.post(`${this.$urlServer}/auth/unconnect_tg`,);
+          console.log(response.data);
+          this.tg_id_label = '';
+        } catch (error) {
+          if (error.response.status === 401) {
+            localStorage.removeItem('role')
+            console.error('Доступ запрещен. Пожалуйста, войдите в систему.');
+            this.$router.push('/auth_form');
+          }
+          console.error(error.response.data);
+        }
+    },
+    async show_label() {
+      if (this.tg_id_label) {
+        this.is_visible_form = false;
+        this.is_visible_tg_label = true;
+      } else {
+        this.is_visible_form = true;
+        this.is_visible_tg_label = false;
+      }
+    }
   },
 };
 </script>

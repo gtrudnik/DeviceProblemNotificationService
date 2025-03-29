@@ -357,8 +357,8 @@ class Controller():
         await session.commit()
 
     @use_db
-    async def connect_tg(self, session: AsyncSession, tg_id: int | None = None, user_id: int | None = None,
-                         login: str | None = None):
+    async def connect_tg(self, session: AsyncSession, tg_id: int | None = None,
+                         user_id: int | None = None, login: str | None = None):
         if [user_id, login].count(None) != 1:
             return "You should choose one parameter: user_id or login"
         if user_id is not None:
@@ -367,10 +367,31 @@ class Controller():
             user = (await session.execute(select(User).filter(User.login == login))).scalar()
         if user.tg_id is not None:
             return "User already connect tg"
-        # TODO: add code to change id user old to new
+
+        user_tg = await self.get_user(tg_id=tg_id)
+        # problems on tg id redirect to user
+        await session.execute(update(ProblemAuthor).
+                              where(ProblemAuthor.author == user_tg.id).values(author=user.id))
         await session.execute(delete(User).filter(User.tg_id == tg_id))  # delete old tg id user
-        user.tg_id = tg_id
+        await session.execute(update(User).where(User.id == user.id).values(tg_id=tg_id))  # set tg id
         await session.commit()
+
+    @use_db
+    async def unconnect_tg(self, session: AsyncSession,
+                           user_id: int | None = None,
+                           login: str | None = None):
+        if [user_id, login].count(None) != 1:
+            return "You should choose one parameter: user_id or login"
+        if user_id is not None:
+            user = (await session.execute(select(User).filter(User.id == user_id))).scalar()
+        if login is not None:
+            user = (await session.execute(select(User).filter(User.login == login))).scalar()
+        if user.tg_id is None:
+            return "User not connected tg"
+
+        await session.execute(update(User).where(User.id == user.id).values(tg_id=None))
+        await session.commit()
+        return "User unconnected tg"
 
     @use_db
     async def delete_tg(self, session: AsyncSession, user_id: int | None = None, login: str | None = None):
@@ -517,3 +538,4 @@ import asyncio
 # print(asyncio.run(controller.del_token("lol")))
 # print(asyncio.run(controller.create_tg_code(331467077)))
 # print(asyncio.run(controller.check_tg_code(331467077, 549335)))
+# asyncio.run(controller.unconnect_tg(user_id=9))
