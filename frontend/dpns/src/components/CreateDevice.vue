@@ -2,7 +2,7 @@
   <div class="container mb-5">
         <h2 class="text-center">Создание нового устройства</h2>
         <form >
-            <div class="form-row">
+            <div class="form-group">
                 <label for="deviceName">Название устройства</label>
                 <input type="text" class="form-control" id="deviceName" v-model="deviceName" placeholder="Введите название устройства" required>
             </div>
@@ -16,19 +16,22 @@
                 <label for="deviceDescription">Описание устройства</label>
                 <textarea class="form-control" id="deviceDescription" v-model="deviceDescription" rows="3" placeholder="Введите описание устройства" required></textarea>
             </div>
-            <div class="form-group">
-                <label for="building">Здание</label>
-                <input type="text" class="form-control" id="building" v-model="building" placeholder="Введите название здания" required>
+
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label for="building">Здание</label>
+                    <input type="text" class="form-control" id="building" v-model="building" placeholder="Введите название здания" required>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="floor">Этаж</label>
+                    <input type="number" min="-10" step="1" class="form-control" id="floor" v-model="floor" placeholder="Введите этаж" required>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="room">Кабинет</label>
+                    <input type="text" class="form-control" id="room" v-model="room" placeholder="Введите номер кабинета" required>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="floor">Этаж</label>
-                <input type="number" min="-10" step="1" class="form-control" id="floor"
-                v-model="floor" placeholder="Введите этаж" required>
-            </div>
-            <div class="form-group">
-                <label for="office">Кабинет</label>
-                <input type="text" class="form-control" id="room" v-model="room" placeholder="Введите номер кабинета" required>
-            </div>
+
             <div class="form-group">
                 <label for="locationDescription">Описание локации</label>
                 <textarea class="form-control" id="locationDescription" v-model="locationDescription" rows="3" placeholder="Введите описание локации" required></textarea>

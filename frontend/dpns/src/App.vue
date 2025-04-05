@@ -51,8 +51,9 @@ export default {
   },
   computed: {
     showNavAdmin() {
+        console.log(this.$route.path);
         return ['/create_device', '/admin_devices', '/admin_problems',
-        '/user_problems', '/create_problem', '/connect_tg'].includes(this.$route.path)
+        '/user_problems', '/create_problem', '/connect_tg'].includes(this.$route.path) || this.$route.path.startsWith('/device/')
     },
   },
   created() {
