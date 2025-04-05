@@ -2,14 +2,16 @@
   <div class="container">
         <h2 class="text-center mb-3 mx-auto">Ваши устройства</h2>
         <div class="col-md-9 mx-auto" v-for="device in devices" :key="device.id">
-            <div class="card mb-4">
-              <div class="card-body">
-                <h5 class="card-title">{{ device.name }}</h5>
-                <h6 class="card-subtitle mb-2 text-muted">{{ device.location }}</h6>
-                <p class="card-text" v-show="device.type"><strong>Тип устройства:</strong> {{ device.type }}</p>
-                <p class="card-text" v-show="device.description"><strong>Описание:</strong> {{ device.description }}</p>
-              </div>
-            </div>
+            <router-link :to="`/device/${device.id}`" style="color: inherit; text-decoration: none;">
+                <div class="card mb-4">
+                  <div class="card-body">
+                    <h5 class="card-title">{{ device.name }}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">{{ device.location }}</h6>
+                    <p class="card-text" v-show="device.type"><strong>Тип устройства:</strong> {{ device.type }}</p>
+                    <p class="card-text" v-show="device.description"><strong>Описание:</strong> {{ device.description }}</p>
+                  </div>
+                </div>
+            </router-link>
         </div>
     </div>
 </template>
