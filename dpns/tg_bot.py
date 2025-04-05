@@ -27,6 +27,15 @@ def check_permission(func):
     return wrapper
 
 
+async def start_problem(tg_id: int, device_id: int):
+    await controller.update_tg_chat(tg_id=tg_id, stage="type_problem", device_id=device_id)
+    problem_types = await controller.get_problem_types(device_id=device_id)
+    problem_types = [problem.name_problem for problem in problem_types] + ["Другое", "Сбросить заявку❌"]
+    menu_buttons = add_buttons(problem_types)
+    ans = "Процесс создания заявки о проблеме на устройве запущен, выберите тип проблемы"
+    return menu_buttons, ans
+
+
 async def send_message(chat_id: int | list[int], message: str):
     """ Function for send message """
     if type(chat_id) == int:
@@ -38,7 +47,18 @@ async def send_message(chat_id: int | list[int], message: str):
 @bot.message_handler(commands=['start'])
 @check_permission
 async def start_message(message):
-    await bot.send_message(message.chat.id, "Здравствуйте!" + help_text)
+    args = message.text.split()[1:]  # Разделяем текст сообщения на части
+    if args:
+        print(args)
+        try:
+            menu_buttons, ans = await start_problem(message.chat.id, int(args[0]))
+            await bot.send_message(message.chat.id, ans, timeout=5, reply_markup=menu_buttons)
+        except:
+            await bot.send_message(message.chat.id, "Возникла проблема, попробуйте ещё раз. "
+                                                    "Если проблема не решится попробуйте через сайт.")
+    else:
+        response_message = "Привет! Как я могу помочь?"  # Сообщение по умолчанию
+    await bot.send_message(message.chat.id, "Здравствуйте!" + help_text + " ")
 
 
 @bot.message_handler(commands=['help'])
@@ -75,11 +95,7 @@ async def new_message(message):
     elif stage == "start":
         if msg.startswith("id="):
             device_id = int(msg.split("=")[-1].strip())
-            await controller.update_tg_chat(tg_id=tg_id, stage="type_problem", device_id=device_id)
-            problem_types = await controller.get_problem_types(device_id=device_id)
-            problem_types = [problem.name_problem for problem in problem_types] + ["Другое", "Сбросить заявку❌"]
-            menu_buttons = add_buttons(problem_types)
-            ans = "Процесс создания заявки о проблеме на устройве запущен, выберите тип проблемы"
+            menu_buttons, ans = await start_problem(tg_id, device_id)
     elif stage == "type_problem":
         ans = "Выберите тип проблемы"
         chat = await controller.get_tg_chat(tg_id=tg_id)
