@@ -47,18 +47,19 @@ async def send_message(chat_id: int | list[int], message: str):
 @bot.message_handler(commands=['start'])
 @check_permission
 async def start_message(message):
+    chat = await controller.get_tg_chat(tg_id=message.chat.id)
     args = message.text.split()[1:]  # Разделяем текст сообщения на части
     if args:
         print(args)
         try:
             menu_buttons, ans = await start_problem(message.chat.id, int(args[0]))
             await bot.send_message(message.chat.id, ans, timeout=5, reply_markup=menu_buttons)
-        except:
+        except Exception as ex:
+            print(ex)
             await bot.send_message(message.chat.id, "Возникла проблема, попробуйте ещё раз. "
                                                     "Если проблема не решится попробуйте через сайт.")
     else:
-        response_message = "Привет! Как я могу помочь?"  # Сообщение по умолчанию
-    await bot.send_message(message.chat.id, "Здравствуйте!" + help_text + " ")
+        await bot.send_message(message.chat.id, "Здравствуйте!" + help_text + " ")
 
 
 @bot.message_handler(commands=['help'])
@@ -109,8 +110,6 @@ async def new_message(message):
                 msg = None
             await controller.update_tg_chat(tg_id=tg_id, stage="description", problem_type=msg)
     elif stage == "description":
-        ans = "Напишите описание вашей проблемы, в случае необходимости, не менее 10 символов или пропустите."
-        menu_buttons = add_buttons(["Пропустить", "Сбросить заявку❌"])
         if msg == "Пропустить" or len(msg) >= 10:
             if msg == "Пропустить":
                 msg = None
@@ -122,6 +121,9 @@ async def new_message(message):
                                             type_problem=chat.problem_type)
             await controller.clear_tg_chat(tg_id=tg_id)
             ans = "Заявка о проблеме успешно создана"
+        else:
+            ans = "Напишите описание вашей проблемы, в случае необходимости, не менее 10 символов или пропустите."
+            menu_buttons = add_buttons(["Пропустить", "Сбросить заявку❌"])
 
     await bot.send_message(chat.tg_id, ans, timeout=5, reply_markup=menu_buttons)
 
