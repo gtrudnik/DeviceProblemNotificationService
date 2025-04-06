@@ -1,23 +1,27 @@
 <template>
-    <nav v-if="showNavAdmin" class="navbar navbar-expand-lg navbar-light bg-primary mb-3">
-        <a class="navbar-brand text-white" style="font-size: 1.5rem;"><i class="fas fa-cog"></i> DPNS</a>
+    <nav v-if="showNav" class="navbar navbar-expand-lg navbar-light bg-primary mb-3">
+        <a class="navbar-brand text-white" style="font-size: 1.5rem;"><i class="fas fa-cog"></i>DPNS</a>
         <div class="collapse navbar-collapse d-flex justify-content-between align-items-center" id="navbarNav">
             <ul class="navbar-nav mx-auto">
                 <li class="nav-item">
                     <router-link to="/user_problems" class="nav-link text-white"
                     style="font-size: 1.2rem;">Ваши заявки</router-link>
                 </li>
-                <li class="nav-item" v-if="role === 'admin'">
+                <li class="nav-item" v-if="role === 'admin' || role === 'super_admin'">
                     <router-link to="/admin_problems" class="nav-link text-white"
                     style="font-size: 1.2rem;">Проблемы</router-link>
                 </li>
-                <li class="nav-item" v-if="role === 'admin'">
+                <li class="nav-item" v-if="role === 'admin' || role === 'super_admin'">
                     <router-link to="/admin_devices" class="nav-link text-white"
                     style="font-size: 1.2rem;">Устройства</router-link>
                 </li>
-                <li class="nav-item" v-if="role === 'admin'">
+                <li class="nav-item" v-if="role === 'admin' || role === 'super_admin'">
                     <router-link to="/create_device" class="nav-link text-white"
                     style="font-size: 1.2rem;">Создать устройство</router-link>
+                </li>
+                <li class="nav-item" v-if="role === 'super_admin'">
+                    <router-link to="/users" class="nav-link text-white"
+                    style="font-size: 1.2rem;">Пользаватели</router-link>
                 </li>
                 <li class="nav-item">
                     <router-link to="/connect_tg" class="nav-link text-white"
@@ -50,10 +54,10 @@ export default {
     };
   },
   computed: {
-    showNavAdmin() {
+    showNav() {
         console.log(this.$route.path);
         return ['/create_device', '/admin_devices', '/admin_problems',
-        '/user_problems', '/create_problem', '/connect_tg'].includes(this.$route.path) || this.$route.path.startsWith('/device/')
+        '/user_problems', '/create_problem', '/connect_tg', '/users'].includes(this.$route.path) || this.$route.path.startsWith('/device/')
     },
   },
   created() {

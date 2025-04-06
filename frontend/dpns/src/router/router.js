@@ -8,6 +8,7 @@ import AdminDevices from '../components/AdminDevices.vue'
 import Device from '../components/Device.vue'
 import ConnectTg from '../components/ConnectTg.vue'
 import Home from '../components/Home.vue'
+import Users from '../components/Users.vue'
 
 
 const routes = [
@@ -20,6 +21,7 @@ const routes = [
   {path: '/admin_problems', component: AdminProblems,},
   {path: '/admin_devices', component: AdminDevices,},
   {path: '/connect_tg', component: ConnectTg,},
+  {path: '/users', component: Users,},
 ];
 
 const router = createRouter({

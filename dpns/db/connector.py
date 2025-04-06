@@ -316,6 +316,11 @@ class Controller():
         return user
 
     @use_db
+    async def get_all_users(self, session: AsyncSession):
+        users = (await session.execute(select(User))).scalars().all()
+        return users
+
+    @use_db
     async def get_user(self, session: AsyncSession, user_id: int | None = None, login: str | None = None,
                        tg_id: int | None = None):
         if [user_id, login, tg_id].count(None) != 2:

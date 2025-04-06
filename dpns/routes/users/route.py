@@ -43,3 +43,11 @@ async def get_user(jwt_data: Annotated[dict | None, Depends(get_token)],
     if user is None:
         return "User is not exist"
     return user
+
+
+@users_router.get("/get_all")
+async def get_user(jwt_data: Annotated[dict | None, Depends(get_token)],
+                   token_data: Annotated[dict | None, Depends(has_token)]):
+    auth_type = await get_access(token_data=token_data, jwt_data=jwt_data, roles=("super_admin",))
+    users = await controller.get_all_users()
+    return users
