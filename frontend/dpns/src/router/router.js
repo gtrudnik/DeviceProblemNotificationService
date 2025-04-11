@@ -5,6 +5,8 @@ import AuthForm from '../components/AuthForm.vue'
 import UserProblems from '../components/UserProblems.vue'
 import AdminProblems from '../components/AdminProblems.vue'
 import AdminDevices from '../components/AdminDevices.vue'
+import DeviceTypes from '../components/DeviceTypes.vue'
+import DeviceTypeProblems from '../components/DeviceTypeProblems.vue'
 import Device from '../components/Device.vue'
 import ConnectTg from '../components/ConnectTg.vue'
 import Home from '../components/Home.vue'
@@ -20,6 +22,8 @@ const routes = [
   {path: '/user_problems', component: UserProblems,},
   {path: '/admin_problems', component: AdminProblems,},
   {path: '/admin_devices', component: AdminDevices,},
+  {path: '/device_types', component: DeviceTypes,},
+  {path: '/device_type_problems/:id', component: DeviceTypeProblems,},
   {path: '/connect_tg', component: ConnectTg,},
   {path: '/users', component: Users,},
 ];

@@ -15,9 +15,9 @@
                     <router-link to="/admin_devices" class="nav-link text-white"
                     style="font-size: 1.2rem;">Устройства</router-link>
                 </li>
-                <li class="nav-item" v-if="role === 'admin' || role === 'super_admin'">
-                    <router-link to="/create_device" class="nav-link text-white"
-                    style="font-size: 1.2rem;">Создать устройство</router-link>
+                <li class="nav-item" v-if="role === 'super_admin'">
+                    <router-link to="/device_types" class="nav-link text-white"
+                    style="font-size: 1.2rem;">Типы устройств</router-link>
                 </li>
                 <li class="nav-item" v-if="role === 'super_admin'">
                     <router-link to="/users" class="nav-link text-white"
@@ -56,8 +56,9 @@ export default {
   computed: {
     showNav() {
         console.log(this.$route.path);
-        return ['/create_device', '/admin_devices', '/admin_problems',
-        '/user_problems', '/create_problem', '/connect_tg', '/users'].includes(this.$route.path) || this.$route.path.startsWith('/device/')
+        return ['/create_device', '/admin_devices', '/admin_problems', '/device_types',
+        '/user_problems', '/create_problem', '/connect_tg', '/users'].includes(this.$route.path)
+        || this.$route.path.startsWith('/device/') || this.$route.path.startsWith('/device_type_problems/')
     },
   },
   created() {

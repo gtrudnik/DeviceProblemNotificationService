@@ -107,6 +107,15 @@ async def get_all_devices():
     return devices
 
 
+@devices_router.get("/get_type_device")
+async def get_all_type_devices(jwt_data: Annotated[dict | None, Depends(get_token)],
+                               token_data: Annotated[dict | None, Depends(has_token)],
+                               type_device_id: int):
+    auth_type = await get_access(token_data=token_data, jwt_data=jwt_data, roles=("admin", "super_admin"))
+    types_device = await controller.get_type_device(type_device_id=type_device_id)
+    return types_device
+
+
 @devices_router.get("/get_all_type_devices")
 async def get_all_type_devices(jwt_data: Annotated[dict | None, Depends(get_token)],
                                token_data: Annotated[dict | None, Depends(has_token)],):

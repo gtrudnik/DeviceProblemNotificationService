@@ -82,6 +82,18 @@ async def feedback_problem(problem_id: int,
                                           comment=comment)
 
 
+@problems_router.post("/create_problem_type")
+async def get_problems_types(jwt_data: Annotated[dict | None, Depends(get_token)],
+                             token_data: Annotated[dict | None, Depends(has_token)],
+                             type_device_id: int,
+                             name: str,
+                             description: str | None = None):
+    auth_type = await get_access(token_data=token_data, jwt_data=jwt_data)
+    problem_types = await controller.create_problem_type(name=name, description=description,
+                                                         type_device_id=type_device_id)
+    return problem_types
+
+
 @problems_router.get("/get")
 async def get_problem(problem_id: int):
     problem = await controller.get_problem_by_id(problem_id=problem_id)

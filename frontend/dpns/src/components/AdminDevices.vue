@@ -1,7 +1,7 @@
 <template>
-  <div class="container">
+  <div class="container col-md-6">
         <h2 class="text-center mb-3 mx-auto">Ваши устройства</h2>
-        <div class="col-md-9 mx-auto" v-for="device in devices" :key="device.id">
+        <div class="mx-auto" v-for="device in devices" :key="device.id">
             <router-link :to="`/device/${device.id}`" style="color: inherit; text-decoration: none;">
                 <div class="card mb-4">
                   <div class="card-body">
@@ -12,6 +12,9 @@
                   </div>
                 </div>
             </router-link>
+        </div>
+        <div class="d-flex justify-content-center mb-5">
+            <router-link to="/create_device" class="w-100 btn btn-primary text-white">Добавить устройство</router-link>
         </div>
     </div>
 </template>
