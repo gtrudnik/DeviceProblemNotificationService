@@ -2,9 +2,12 @@ from telebot.async_telebot import AsyncTeleBot
 from dpns.config import settings
 from dpns.db.connector import controller
 from telebot import types
+import emoji
 
 bot = AsyncTeleBot(settings.token)
-help_text = "test"
+help_text = emoji.emojize("Это бот сервиса оповещения о проблемах на устройствах - DPNS :gear:\n"
+             "Отсканируйте qr-код на устройстве, затем заполнените форму о проблеме :memo:\n\n"
+             "/code - команда для получения кода для подключения телеграм к Вашему аккаунту в сервисе")
 
 
 def add_buttons(text_buttons: list[str]):
@@ -59,7 +62,8 @@ async def start_message(message):
             await bot.send_message(message.chat.id, "Возникла проблема, попробуйте ещё раз. "
                                                     "Если проблема не решится попробуйте через сайт.")
     else:
-        await bot.send_message(message.chat.id, "Здравствуйте!" + help_text + " ")
+        await bot.send_message(message.chat.id, "Здравствуйте!\n" + help_text + " ")
+
 
 
 @bot.message_handler(commands=['help'])
