@@ -1,14 +1,16 @@
 <template>
   <div class="container col-md-7">
         <h2 class="text-center mb-3 mx-auto">Типы устройств</h2>
-        <div class="mx-auto" v-for="device in device_types" :key="device.id">
-            <router-link :to="`/device_type_problems/${device.id}`" style="color: inherit; text-decoration: none;">
-                <div class="card mb-2">
-                    <div class="card-body">
-                        <h5 class="mb-0">{{ device.type_device }}</h5>
+        <div style="max-height: 55vh; overflow-y: auto">
+            <div class="mx-auto" v-for="device in device_types" :key="device.id">
+                <router-link :to="`/device_type_problems/${device.id}`" style="color: inherit; text-decoration: none;">
+                    <div class="card mb-2">
+                        <div class="card-body">
+                            <h5 class="mb-0">{{ device.type_device }}</h5>
+                        </div>
                     </div>
-                </div>
-            </router-link>
+                </router-link>
+            </div>
         </div>
         <h5 class="text-center mt-4">Добавить новый тип устройства</h5>
         
