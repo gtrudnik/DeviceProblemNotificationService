@@ -32,10 +32,17 @@ def check_permission(func):
 
 async def start_problem(tg_id: int, device_id: int):
     await controller.update_tg_chat(tg_id=tg_id, stage="type_problem", device_id=device_id)
+    device, device_type = await controller.get_device_by_id(device_id=device_id)
     problem_types = await controller.get_problem_types(device_id=device_id)
     problem_types = [problem.name_problem for problem in problem_types] + ["Другое", "Сбросить заявку❌"]
     menu_buttons = add_buttons(problem_types)
-    ans = "Процесс создания заявки о проблеме на устройве запущен, выберите тип проблемы"
+    ans = (f"Процесс создания заявки о проблеме на устройве запущен.\n\n"
+           f"Имя устройства: {device.name}\n"
+           f"Тип устройства: {device_type}\n"
+           f"Расположение устройства: {'корпус ' + device.building + ','} "
+           f"{'этаж ' + str(device.floor) + ','} {'кабинет ' + device.room}\n"
+           f"Описание устройства: {device.description}\n\n"
+           f"Выберите тип проблемы")
     return menu_buttons, ans
 
 
