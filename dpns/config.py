@@ -18,5 +18,8 @@ class Settings:
 
     token: str = os.getenv('TG_TOKEN')
 
+    redis_user: str = os.getenv('REDIS_USER')
+    redis_user_password: str = os.getenv('REDIS_USER_PASSWORD')
+
 
 settings = Settings()

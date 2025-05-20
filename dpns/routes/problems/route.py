@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, Request
 from dpns.db.connector import controller
 from dpns.schemas.status import Status
 from dpns.tg_bot import send_message
+from dpns.scheduler import celery_tasks
 from typing import Annotated
 from dpns.libs.token_auth import has_token
 from dpns.libs.user_auth import get_token
@@ -41,7 +42,8 @@ async def create_problem(jwt_data: Annotated[dict | None, Depends(get_token)],
     admins = await controller.get_device_admins(device_id=device_id)
     tg_admins = [admin.tg_id for admin in admins if admin.tg_id is not None]
     try:
-        await send_message(tg_admins, "test_for_admin")
+        # await send_message(tg_admins, "test_for_admin")
+        celery_tasks.schedule_send_message.apply_async(args=[tg_admins, "test_for_admin"])
     except:
         print("error tg send")
 
@@ -56,7 +58,8 @@ async def change_status_problem(jwt_data: Annotated[dict | None, Depends(get_tok
     authors = await controller.get_authors_by_problem(problem=problem_id)
     tg_authors = [author.tg_id for author in authors if author.tg_id is not None]
     try:
-        await send_message(tg_authors, "test_for_authors")
+        # await send_message(tg_authors, "test_for_authors")
+        celery_tasks.schedule_send_message.apply_async(args=[tg_authors, "test_for_authors"])
     except:
         print("error tg send")
 
