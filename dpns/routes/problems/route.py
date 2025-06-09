@@ -27,6 +27,9 @@ class ProblemResponse(BaseModel):
     device_floor: int
     device_room: str
 
+    grade: int | None = None
+    feedback: str | None = None
+
 
 @problems_router.post("/create")
 async def create_problem(jwt_data: Annotated[dict | None, Depends(get_token)],
@@ -74,13 +77,14 @@ async def set_resolver_problem(jwt_data: Annotated[dict | None, Depends(get_toke
 
 
 @problems_router.post("/feedback")
-async def feedback_problem(problem_id: int,
-                           author_id: int,
+async def feedback_problem(jwt_data: Annotated[dict | None, Depends(get_token)],
+                           token_data: Annotated[dict | None, Depends(has_token)],
+                           problem_id: int,
                            grade: int,
                            comment: str | None = None):
-    # TODO: get author by auth
+    auth_type = await get_access(token_data=token_data, jwt_data=jwt_data)
     await controller.add_problem_feedback(problem_id=problem_id,
-                                          author_id=author_id,
+                                          author_id=jwt_data["id"],
                                           grade=grade,
                                           comment=comment)
 
@@ -106,13 +110,14 @@ async def get_problem(problem_id: int):
 @problems_router.get("/get_by_author")
 async def get_problems_by_author(jwt_data: Annotated[dict | None, Depends(get_token)],
                                  token_data: Annotated[dict | None, Depends(has_token)],
-                                 author: int|None = None):
+                                 author: int | None = None):
     auth_type = await get_access(token_data=token_data, jwt_data=jwt_data)
     problems = await controller.get_problems_by_author(author=author if author is not None else jwt_data["id"])
-    devices_id = [i.device for i in problems]
+    devices_id = [i[0].device for i in problems]
     devices = await controller.get_list_devices(devices_id)
     problems_response = []
-    for problem in problems:
+    for problem_ in problems:
+        problem, grade, feedback = problem_
         for device in devices:
             if device.id == problem.device:
                 problems_response.append(ProblemResponse(
@@ -128,6 +133,9 @@ async def get_problems_by_author(jwt_data: Annotated[dict | None, Depends(get_to
                     device_building=device.building,
                     device_floor=device.floor,
                     device_room=device.room,
+
+                    grade=grade,
+                    feedback=feedback,
                 ))
     return problems_response
 

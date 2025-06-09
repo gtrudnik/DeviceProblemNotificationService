@@ -27,9 +27,9 @@ async def change_role(new_role: Roles,
     return "Role updated "
 
 
-@users_router.post("/connect_tg")
-async def connect_tg():
-    pass
+# @users_router.post("/connect_tg")
+# async def connect_tg():
+#     pass
 
 
 @users_router.get("/get")

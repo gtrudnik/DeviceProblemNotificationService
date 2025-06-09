@@ -248,7 +248,7 @@ class Controller():
                  filter(ProblemAuthor.author == author).
                  outerjoin(Problem).where(ProblemAuthor.problem == Problem.id))
         problems = (await session.execute(query)).scalars().all()
-        return [i.problems for i in problems]
+        return [(i.problems, i.grade, i.comment) for i in problems]
 
     @use_db
     async def get_authors_by_problem(self,

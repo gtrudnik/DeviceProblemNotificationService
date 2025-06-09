@@ -20,6 +20,46 @@
                 <p class="card-text" v-show="problem.problemDescription"><strong>Описание:</strong> {{ problem.problemDescription }}</p>
                 <p class="card-text"><strong>Статус:</strong> {{ problem.status }}</p>
                 <p class="card-text"><strong>Дата создания заявки:</strong> {{ problem.date_create }}</p>
+                <div v-show="problem.status === 'Решено'">
+                    <details v-show="!problem.grade">
+                      <summary>Оставить отзыв</summary>
+                      <form>
+                      <label>Оценка</label>
+                      <br>
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" v-model="selectedValue" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="1">
+                          <label class="form-check-label" for="inlineRadio1">1</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" v-model="selectedValue" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="2">
+                          <label class="form-check-label" for="inlineRadio2">2</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" v-model="selectedValue" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="3">
+                          <label class="form-check-label" for="inlineRadio1">3</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" v-model="selectedValue" type="radio" name="inlineRadioOptions" id="inlineRadio4" value="4">
+                          <label class="form-check-label" for="inlineRadio2">4</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" v-model="selectedValue" type="radio" name="inlineRadioOptions" id="inlineRadio5" value="5">
+                          <label class="form-check-label" for="inlineRadio2">5</label>
+                        </div>
+                      <div class="form-group">
+                        <label for="feedback_text">Описание проблемы</label>
+                        <textarea v-model="feedback_text" class="form-control" id="problemDescription" rows="4" placeholder="Опишите вашу проблему здесь..."></textarea>
+                      </div>
+                      <button class="btn btn-primary mt-2" @click="send_feedback(problem.id, selectedValue, feedback_text)">Отправить</button>
+                      </form>
+                    </details>
+                    <details v-show="problem.grade">
+                      <summary>Отзыв</summary>
+                      <label>Оценка: {{ problem.grade }}</label>
+                      <br>
+                      <label>Комментарий: {{ problem.feedback }}</label>
+                    </details>
+                </div>
               </div>
             </div>
         </div>
@@ -54,6 +94,8 @@ export default {
           problemType: problem.type_problem,
           problemDescription: problem.description,
           date_create: format(problem.date_created, 'dd.MM.yyyy HH:mm'),
+          grade: problem.grade,
+          feedback: problem.feedback,
         }
 
         if (problem.resolver){
@@ -99,6 +141,32 @@ export default {
         this.problems_displayed = problems_displayed;
       }
     },
+    async send_feedback(problem_id, grade, feedback) {
+      console.log(problem_id);
+      if (grade) {
+        console.log(grade);
+        try {
+          const params = new URLSearchParams({
+            problem_id: problem_id,
+            grade: grade,
+          });
+          if (feedback) {
+            params.append('comment', feedback);
+          }
+          const response = await axios.post(`${this.$urlServer}/problems/feedback?${params.toString()}`,);
+          console.log(response.data);
+        } catch (error) {
+          if (error.response.status === 401) {
+            localStorage.removeItem('role')
+            console.error('Доступ запрещен. Пожалуйста, войдите в систему.');
+            this.$router.push('/auth_form');
+          }
+          console.error(error.response.data);
+        }
+      }
+      console.log(feedback);
+    },
+
   },
 }
 </script>
