@@ -24,6 +24,7 @@
               required
             />
           </div>
+          <h6 v-if="bad_login" style="color: red;">*Неправильный логин или пароль</h6>
           <button type="submit" class="btn btn-primary btn-block">Войти</button>
         </form>
       </div>
@@ -42,6 +43,7 @@ export default {
       email: '',
       password: '',
       previousRoute: null,
+      bad_login: false,
     };
   },
   beforeRouteEnter(to, from, next) {
@@ -51,21 +53,29 @@ export default {
   },
   methods: {
     async handleLogin() {
-      const response = await axios.post(`${this.$urlServer}/auth/auth`,
-        {"user": this.email, "password": this.password},
-      );
-      console.log(response.data.access_token);
-      this.email = '';
-      this.password = '';
-      localStorage.setItem('role', response.data.role)
-      if (this.previousRoute !== "/"){
-        this.$router.back();
-      } else if (response.data.role === "admin"){
-        this.$router.push('/admin_problems');
-      } else {
-        this.$router.push('/user_problems');
+      try {
+          const response = await axios.post(`${this.$urlServer}/auth/auth`,
+            {"user": this.email, "password": this.password},
+          );
+          console.log(response.data.access_token);
+          this.email = '';
+          this.password = '';
+          localStorage.setItem('role', response.data.role)
+          if (this.previousRoute !== "/"){
+            this.$router.back();
+          } else if (response.data.role === "admin"){
+            this.$router.push('/admin_problems');
+          } else {
+            this.$router.push('/user_problems');
+          }
+          //this.$router.push(this.$store.state.previousRoute.fullPath);
+      } catch (error) {
+          if (error.response.status === 401) {
+            this.bad_login = true;
+            console.error('Доступ запрещен. Пожалуйста, войдите в систему.');
+          }
+          console.error(error.response.data);
       }
-      //this.$router.push(this.$store.state.previousRoute.fullPath);
     }
   }
 };
